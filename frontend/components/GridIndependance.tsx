@@ -2,25 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/styles/colours';
 
-interface GridIndependenceProps {
-    timeframe: string;
-    energyStats: any;
-}
-
-const GridIndependence = ({ timeframe, energyStats }) => {
-
-    // Calculate percentage
-    const totalConsumption = energyStats?.[timeframe]?.total_consumption || 0;
-    const gridConsumption = energyStats?.[timeframe]?.consumption_breakdown?.from_grid || 0;
-
-    // Calculate percentage, handling division by zero
-    let percentage = 0;
-    if (totalConsumption > 0) {
-        percentage = ((totalConsumption - gridConsumption) / totalConsumption) * 100;
-        // Round to 1 decimal place
-        percentage = Math.round(percentage * 10) / 10;
-    }
-
+const GridIndependence = ({ percentage = 80 }) => {
     return (
         <View style={styles.gridIndependence}>
             <Text style={styles.gridText}>{percentage}%</Text>

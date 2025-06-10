@@ -1,265 +1,116 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '@/styles/colours';
+import { colors } from '../styles/colours';
 
-interface HomeGraphProps {
-    timeframe: string; // selected by user via TimeSelector component
-    energyStats: any; // in the form:
-    /*
-        "energy_stats": {
-    "day": {
-      "total_production": "12053",
-      "production_breakdown": {
-        "solar_panels": "11011",
-        "battery_discharge": "1042",
-        "grid_purchase": "5"
-      },
-      "total_consumption": "418193",
-      "consumption_breakdown": {
-        "battery_charging": "8943",
-        "grid_selling": "5",
-        "home_power": "409245"
-      }
-    }, "week", "month", "year" and "total".
-     */
-}
+const HomeGraph = () => {
+    // Generic bar chart data for production vs consumption
+    const data = [
+        { label: 'Jan', production: 10, consumption: 25 },
+        { label: 'Feb', production: 15, consumption: 30 },
+        { label: 'Mar', production: 30, consumption: 40 },
+        { label: 'Apr', production: 50, consumption: 45 },
+        { label: 'May', production: 60, consumption: 45 },
+        { label: 'Jun', production: 50, consumption: 45 },
+    ];
 
-const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
-    // Simple loading state
-    if (!energyStats) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.loadingText}>Loading energy data...</Text>
-            </View>
-        );
-    }
-
-    const timeframeData = energyStats[timeframe];
-
-    // Handle missing data
-    if (!timeframeData) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.errorText}>No data available for {timeframe}</Text>
-            </View>
-        );
-    }
-
-    // Simple function to safely parse values
-    const getValue = (value) => {
-        if (value === undefined || value === null) return 0;
-        const parsed = parseInt(value);
-        return isNaN(parsed) ? 0 : parsed;
-    };
-
-    // Get production values
-    const totalProduction = getValue(timeframeData.total_production);
-    const toHome = getValue(timeframeData.production_breakdown?.to_home);
-    const toBattery = getValue(timeframeData.production_breakdown?.to_battery);
-    const toGrid = getValue(timeframeData.production_breakdown?.to_grid);
-
-    // Get consumption values
-    const totalConsumption = getValue(timeframeData.total_consumption);
-    const fromSolar = getValue(timeframeData.consumption_breakdown?.from_solar);
-    const fromBattery = getValue(timeframeData.consumption_breakdown?.from_battery);
-    const fromGrid = getValue(timeframeData.consumption_breakdown?.from_grid);
-
-    // Calculate max value for bar scaling to allow visual comparison
-    const maxValue = Math.max(totalProduction, totalConsumption);
-
+    const maxValue = Math.max(...data.flatMap(d => [d.production, d.consumption]));
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Energy Summary</Text>
-            <Text style={styles.subtitle}>
-                Production: {totalProduction} w | Consumption: {totalConsumption} w
-            </Text>
-
-            <View style={styles.barContainer}>
-                <View style={styles.barGroup}>
-                    <Text style={styles.barLabel}>System has produced:</Text>
-                    <View style={styles.bar}>
-                        {totalProduction > 0 ? (
-                            <>
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.warning,
-                                    flex: (toHome / maxValue) || 0
-                                }]} />
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.info,
-                                    flex: (toBattery / maxValue) || 0
-                                }]} />
-                                <View style={[styles.barSegment, {
-                                    backgroundColor: colors.danger,
-                                    flex: (toGrid / maxValue) || 0
-                                }]} />
-                                {/* Empty space to maintain consistent width */}
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: 'transparent',
-                                    flex: (maxValue - totalProduction) / maxValue || 0
-                                }]} />
-                            </>
-                        ) : (
-                            <View style={[styles.barSegment, { backgroundColor: colors.lightGray, flex: 1 }]} />
-                        )}
-                    </View>
-                    <View style={styles.barValueContainer}>
-                        <View style={{ flex: totalProduction / maxValue }} />
-                        <Text style={styles.barValue}>{totalProduction} w</Text>
-                    </View>
+                <View style={styles.chart}>
+                    {data.map((item, index) => (
+                        <View key={index} style={styles.barGroup}>
+                            <View style={styles.bars}>
+                                <View 
+                                    style={[
+                                        styles.bar, 
+                                        styles.productionBar,
+                                        { height: (item.production / maxValue) * 100 }
+                                    ]} 
+                                />
+                                <View 
+                                    style={[
+                                        styles.bar, 
+                                        styles.consumptionBar,
+                                        { height: (item.consumption / maxValue) * 100 }
+                                    ]} 
+                                />
+                            </View>
+                            <Text style={styles.label}>{item.label}</Text>
+                        </View>
+                    ))}
                 </View>
-
-                <View style={styles.legendContainer}>
+                <View style={styles.legend}>
                     <View style={styles.legendItem}>
-                        <View style={[styles.legendColor, { backgroundColor: colors.warning }]} />
-                        <Text style={styles.legendText}>To Home</Text>
-                    </View>
-                    <View style={styles.legendItem}>
-                        <View style={[styles.legendColor, { backgroundColor: colors.info }]} />
-                        <Text style={styles.legendText}>To Battery</Text>
+                        <View style={[styles.legendColor, { backgroundColor: colors.primary }]} />
+                        <Text style={styles.legendText}>Production</Text>
                     </View>
                     <View style={styles.legendItem}>
                         <View style={[styles.legendColor, { backgroundColor: colors.danger }]} />
-                        <Text style={styles.legendText}>To Grid</Text>
+                        <Text style={styles.legendText}>Consumption</Text>
                     </View>
                 </View>
-
-                <View style={styles.barGroup}>
-                    <Text style={styles.barLabel}>System has consumed:</Text>
-                    <View style={styles.bar}>
-                        {totalConsumption > 0 ? (
-                            <>
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.success,
-                                    flex: (fromSolar / maxValue) || 0
-                                }]} />
-                                <View style={[styles.barSegment, {
-                                    backgroundColor: colors.info,
-                                    flex: (fromBattery / maxValue) || 0
-                                }]} />
-                                <View style={[styles.barSegment, {
-                                    backgroundColor: colors.danger,
-                                    flex: (fromGrid / maxValue) || 0
-                                }]} />
-                                {/* Empty space to maintain consistent width */}
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: 'transparent',
-                                    flex: (maxValue - totalConsumption) / maxValue || 0
-                                }]} />
-                            </>
-                        ) : (
-                            <View style={[styles.barSegment, { backgroundColor: colors.lightGray, flex: 1 }]} />
-                        )}
-                    </View>
-                    <View style={styles.barValueContainer}>
-                        <View style={{ flex: totalConsumption / maxValue }} />
-                        <Text style={styles.barValue}>{totalConsumption} w</Text>
-                    </View>
-                </View>
-            </View>
-
-            <View style={styles.legendContainer}>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.success }]} />
-                    <Text style={styles.legendText}>From Solar</Text>
-                </View>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.info }]} />
-                    <Text style={styles.legendText}>From Battery</Text>
-                </View>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.danger }]} />
-                    <Text style={styles.legendText}>From Grid</Text>
-                </View>
-            </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15,
         backgroundColor: colors.white,
-        borderRadius: 10,
-        marginTop: 10,
-        marginBottom: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        borderRadius: 12,
+        padding: 5,
         elevation: 3,
+        marginTop: 15,
     },
-    loadingText: {
-        textAlign: 'center',
-        fontSize: 16,
-        color: colors.gray,
-    },
-    errorText: {
-        textAlign: 'center',
-        fontSize: 16,
-        color: colors.danger,
-    },
-    title: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 3,
-        textAlign: 'center',
-    },
-    subtitle: {
-        fontSize: 12,
-        color: colors.gray,
-        textAlign: 'center',
-    },
-    barContainer: {
-        marginVertical: 8,
+    chart: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'flex-end',
+        height: 120,
+        marginBottom: 16,
     },
     barGroup: {
+        alignItems: 'center',
+    },
+    bars: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        gap: 2,
         marginBottom: 8,
     },
-    barLabel: {
-        fontSize: 12,
-        fontWeight: '500',
-        marginBottom: 3,
-    },
     bar: {
-        height: 25,
-        flexDirection: 'row',
-        backgroundColor: colors.lightGray,
-        borderRadius: 5,
-        overflow: 'hidden',
+        width: 8,
+        minHeight: 4,
+        borderRadius: 2,
     },
-    barSegment: {
-        height: '100%',
+    productionBar: {
+        backgroundColor: colors.primary,
     },
-    barValueContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        marginTop: 2,
+    consumptionBar: {
+        backgroundColor: colors.danger,
     },
-    barValue: {
+    label: {
         fontSize: 10,
-        color: colors.gray,
+        color: colors.textSecondary,
     },
-    legendContainer: {
+    legend: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
         justifyContent: 'center',
+        gap: 16,
     },
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: 10,
-        marginBottom: 5,
+        gap: 4,
     },
     legendColor: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        marginRight: 3,
+        width: 12,
+        height: 12,
+        borderRadius: 2,
     },
     legendText: {
-        fontSize: 10,
-        color: colors.gray,
+        fontSize: 12,
+        color: colors.textSecondary,
     },
 });
 

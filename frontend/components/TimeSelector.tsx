@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { colors } from '@/styles/colours';
 
-const TimeSelector = ({ selectedTimeframe, onTimeframeChange, timeframes = ['day', 'week', 'month', 'year', 'total'] }) => {
+const TimeSelector = ({ selectedTimeframe, onTimeframeChange, timeframes = ['Day', 'Week', 'Month', 'Year', 'Total'] }) => {
     return (
         <View style={styles.timeSelector}>
             {timeframes.map((timeframe) => (
