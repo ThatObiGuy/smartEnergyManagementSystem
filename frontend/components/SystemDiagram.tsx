@@ -20,7 +20,7 @@ const systemDiagram = () => {
 
             {/* Central Hub */}
             <View style={styles.centralHub}>
-                <Ionicons name="nuclear" size={40} color={colors.textSecondary} />
+                <Ionicons name="school" size={40} color={colors.textSecondary} />
             </View>
 
             {/* House */}
@@ -73,18 +73,18 @@ const styles = StyleSheet.create({
         ...commonStyles.shadow,
     },
     solarPanel: {
-        top: 20,
+        top: 5,
     },
     battery: {
         left: 40,
-        top: 75,
+        top: '40%',
     },
     house: {
         right: 40,
-        top: 75,
+        top: '40%',
     },
     grid: {
-        bottom: 20,
+        bottom: 5,
     },
     connectionLines: {
         position: 'absolute',
@@ -93,33 +93,34 @@ const styles = StyleSheet.create({
     },
     line: {
         position: 'absolute',
-        backgroundColor: colors.border,
+        backgroundColor: colors.lightGray,
     },
     lineToSolar: {
         width: 2,
-        height: 30,
-        top: 50,
+        height: 40,
+        top: 55,
         left: '50%',
         marginLeft: -1,
+        color: colors.success,
     },
     lineToBattery: {
-        width: 30,
+        width: 60,
         height: 2,
         top: '50%',
-        left: 70,
+        left: 90,
         marginTop: -1,
     },
     lineToHouse: {
-        width: 30,
+        width: 60,
         height: 2,
         top: '50%',
-        right: 70,
+        right: 90,
         marginTop: -1,
     },
     lineToGrid: {
         width: 2,
-        height: 30,
-        bottom: 50,
+        height: 40,
+        bottom: 55,
         left: '50%',
         marginLeft: -1,
     },

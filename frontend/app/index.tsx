@@ -1,9 +1,16 @@
-import { Text, View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import HomeInfo from "../components/HomeInfo";
 import SystemDiagram from "@/components/SystemDiagram";
+import TimeSelector from "@/components/TimeSelector";
+import GridIndependance from "@/components/GridIndependance";
+import HomeGraph from "@/components/HomeGraph";
+import { useState } from "react";
+
 
 export default function Index() {
-  return (
+    const [selectedTimeframe, setSelectedTimeframe] = useState('Day');
+
+    return (
     <View
       style={{
         flex: 1,
@@ -13,7 +20,14 @@ export default function Index() {
     >
         <HomeInfo />
         <SystemDiagram />
-      <Text>Edit app/index.tsx to edit this screen.123456</Text>
+        <TimeSelector
+            selectedTimeframe={selectedTimeframe}
+            onTimeframeChange={setSelectedTimeframe} />
+        <GridIndependance />
+        <HomeGraph />
+
     </View>
+
   );
 }
+
