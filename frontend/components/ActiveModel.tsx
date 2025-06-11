@@ -14,7 +14,6 @@ const ActiveModel = ({ title = "ACTIVE MODEL" }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 25,
         backgroundColor: '#ffffff',
         padding: 20,
         margin: 5,
