@@ -1,6 +1,6 @@
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
-import { sql } from "./config/db.js";
 
 // import indexRouter from "./routes/indexRoutes.js";
 import finReportRouter from "./routes/finReportRoutes.js";
@@ -16,8 +16,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.use(cors()); // for development TODO: Not forget
+
 // app.use("/", indexRouter);
-app.use("/finReport", finReportRouter);
+app.use("/api/finReport", finReportRouter);
 // app.use("/modelComp", modelCompRouter);
 
 app.listen(PORT, () => {

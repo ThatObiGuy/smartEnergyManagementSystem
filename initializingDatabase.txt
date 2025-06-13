@@ -1,7 +1,9 @@
 CREATE TABLE sites (
     site_id SERIAL PRIMARY KEY,
     site_name TEXT NOT NULL,
-    location TEXT
+    location TEXT,
+    installation_date DATE,
+    installation_cost INTEGER
 );
 
 CREATE TABLE solar_data (

@@ -1,31 +1,58 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+interface DailySaleData {
+    lwr: number;
+    median: number;
+    upr: number;
+}
+
+interface BatteryAdviceProps {
+    batteryCost?: number; // in euros
+    batteryCapacity?: number; // in kWh
+    dailySaleToGrid?: DailySaleData;
+}
+
 const BatteryAdvice = ({
-                                      title = "Should you invest in another battery?",
-                                      recommendationText = "Based on your current energy consumption and production patterns, investing in an additional battery could increase your energy independence and potentially provide additional savings. Our analysis suggests that with current usage patterns, an additional battery investment could pay for itself within 3-5 years through increased energy storage capacity and reduced grid dependency. Consider factors such as available space, budget, and future energy needs when making this decision."
-                                  }) => {
+                           batteryCost,
+                           batteryCapacity,
+                           dailySaleToGrid
+                       }: BatteryAdviceProps) => {
+
+    
+    const generateAdvice = () => {
+        // Check if all required props are provided
+        if (!dailySaleToGrid || !batteryCost || !batteryCapacity) {
+            return "Battery advice unavailable - missing data.";
+        }
+
+        const { median } = dailySaleToGrid;
+        const dailySavings = median * 0.36; // Convert cents to euros - taken 36 cents as a sort of guess TODO: Investigate this figure.
+        const annualSavings = dailySavings * 365;
+        const paybackYears = Math.round((batteryCost / annualSavings) * 10) / 10;
+        
+        const shouldBuy = paybackYears <= 6;
+        
+        return `Given a ${batteryCapacity} kw battery costs €${batteryCost.toLocaleString()} and you're selling a average of ${median} kW back to the grid on an average day, you ${shouldBuy ? 'should' : 'shouldn\'t'} buy ${batteryCapacity} kw another battery. ${shouldBuy ? `The payback period would be approximately ${paybackYears} years.` : `The payback period would be too long at ${paybackYears} years.`}`;
+    };
+
     return (
-        <View style={styles.recommendationCard}>
-            <View style={styles.recommendationHeader}>
-                <Text style={styles.recommendationTitle}>{title}</Text>
-                <View style={styles.batteryIcon}>
-                    <View style={styles.battery}>
-                        <View style={styles.batteryBody} />
-                        <View style={styles.batteryTip} />
-                        <Text style={styles.batteryPlus}>+</Text>
-                    </View>
+        <View style={styles.card}>
+            <View style={styles.iconContainer}>
+                <View style={styles.battery}>
+                    <View style={styles.batteryTip} />
+                    <Text style={styles.batteryPlus}>+</Text>
                 </View>
             </View>
-            <Text style={styles.recommendationText}>
-                {recommendationText}
+            <Text style={styles.adviceText}>
+                {generateAdvice()}
             </Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    recommendationCard: {
+    card: {
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 20,
@@ -38,21 +65,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 3.84,
         elevation: 5,
-    },
-    recommendationHeader: {
-        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+    },
+    iconContainer: {
         marginBottom: 15,
-    },
-    recommendationTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        flex: 1,
-    },
-    batteryIcon: {
-        marginLeft: 10,
     },
     battery: {
         position: 'relative',
@@ -80,10 +96,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-    recommendationText: {
+    adviceText: {
         fontSize: 14,
         lineHeight: 20,
         color: '#666',
+        textAlign: 'center',
     },
 });
 

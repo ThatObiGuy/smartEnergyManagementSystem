@@ -1,24 +1,15 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tabs } from "expo-router";
-import { SiteProvider } from '@/context/SiteContext';
 
 export default function RootLayout() {
   return (
-    <SiteProvider>
       <Tabs
-          initialRouteName="landing" // Starts on the landing page
           screenOptions={{
             headerShown : false,
+            tabBarActiveTintColor: 'blue',
           }}
       >
-      <Tabs.Screen
-          name="landing"
-          options={{
-              href: null, // Completely removes this tab from navigation
-              tabBarStyle: { display: 'none' } // Hide tab bar on landing page
-          }}
-      />
         <Tabs.Screen
             name="(tabs)/FinReport"
             options={{
@@ -27,7 +18,7 @@ export default function RootLayout() {
             }}
         />
         <Tabs.Screen
-            name="(tabs)/Index"
+            name="Index"
             options={{
               title: "Home",
               tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />
@@ -41,6 +32,5 @@ export default function RootLayout() {
             }}
         />
       </Tabs>
-    </SiteProvider>
   );
 }

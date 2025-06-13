@@ -1,138 +1,67 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { View, Text, StyleSheet } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
+interface PaybackProgressChartProps {
+    installationDate: string;
+    installationCost: number;
+    annualGrossSavings: number;
+}
 
-const PaybackProgressChart = ({
-                                  title = "Payback Progress",
-                                  subtitle = "Cost Paid vs Single Customer",
-                                  chartData = null,
-                                  currentPositionPercentage = 60 // Position of "You're here" indicator (0-100)
-                              }) => {
-    // Default sample data if none provided
-    const defaultData = {
-        labels: Array.from({ length: 20 }, (_, i) => (i + 1).toString()),
-        datasets: [
-            {
-                data: [
-                    -100, -95, -88, -82, -75, -68, -60, -52, -43, -34,
-                    -25, -15, -5, 5, 18, 32, 48, 65, 85, 108
-                ],
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                strokeWidth: 3,
-            },
-        ],
-    };
-
-    const data = chartData || defaultData;
-
-    const chartConfig = {
-        backgroundColor: '#ffffff',
-        backgroundGradientFrom: '#ffffff',
-        backgroundGradientTo: '#ffffff',
-        decimalPlaces: 0,
-        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(100, 100, 100, ${opacity})`,
-        style: {
-            borderRadius: 16,
-        },
-        propsForDots: {
-            r: '0',
-        },
-        propsForBackgroundLines: {
-            strokeWidth: 1,
-            stroke: '#e3e3e3',
-        },
-    };
-
+const PaybackProgressChart: React.FC<PaybackProgressChartProps> = ({
+    installationDate,
+    installationCost,
+    annualGrossSavings
+}) => {
     return (
-        <View style={styles.chartCard}>
-            <Text style={styles.chartTitle}>{title}</Text>
-            <Text style={styles.chartSubtitle}>{subtitle}</Text>
-
-            <View style={styles.chartContainer}>
-                <LineChart
-                    data={data}
-                    width={screenWidth - 60}
-                    height={200}
-                    chartConfig={chartConfig}
-                    bezier
-                    style={styles.chart}
-                    withInnerLines={true}
-                    withOuterLines={false}
-                    withVerticalLines={true}
-                    withHorizontalLines={true}
-                    fromZero={false}
-                />
-
-                {/* Current position indicator */}
-                <View style={[
-                    styles.currentPositionContainer,
-                    { left: `${currentPositionPercentage}%` }
-                ]}>
-                    <View style={styles.currentPositionArrow} />
-                    <Text style={styles.currentPositionText}>You're here</Text>
-                </View>
+        <View style={styles.container}>
+            <Text style={styles.title}>Payback Progress</Text>
+            
+            <View style={styles.propContainer}>
+                <Text style={styles.propLabel}>Installation Date:</Text>
+                <Text style={styles.propValue}>{installationDate}</Text>
+            </View>
+            
+            <View style={styles.propContainer}>
+                <Text style={styles.propLabel}>Installation Cost:</Text>
+                <Text style={styles.propValue}>€{installationCost.toLocaleString()}</Text>
+            </View>
+            
+            <View style={styles.propContainer}>
+                <Text style={styles.propLabel}>Annual Gross Savings:</Text>
+                <Text style={styles.propValue}>€{annualGrossSavings.toLocaleString()}</Text>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    chartCard: {
+    container: {
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 20,
         margin: 5,
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
         elevation: 5,
     },
-    chartTitle: {
+    title: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: 'bold',
         color: '#333',
-    },
-    chartSubtitle: {
-        fontSize: 12,
-        color: '#666',
         marginBottom: 20,
+        textAlign: 'center',
     },
-    chartContainer: {
-        position: 'relative',
+    propContainer: {
+        marginBottom: 12,
     },
-    chart: {
-        borderRadius: 16,
+    propLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 4,
     },
-    currentPositionContainer: {
-        position: 'absolute',
-        bottom: 40,
-        alignItems: 'center',
-        transform: [{ translateX: -20 }], // Center the indicator
-    },
-    currentPositionArrow: {
-        width: 0,
-        height: 0,
-        borderLeftWidth: 8,
-        borderRightWidth: 8,
-        borderBottomWidth: 15,
-        borderStyle: 'solid',
-        backgroundColor: 'transparent',
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: '#ff4444',
-    },
-    currentPositionText: {
-        fontSize: 12,
-        color: '#ff4444',
-        fontWeight: '600',
-        marginTop: 5,
+    propValue: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
     },
 });
 
