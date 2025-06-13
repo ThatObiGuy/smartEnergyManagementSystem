@@ -1,9 +1,7 @@
 CREATE TABLE sites (
     site_id SERIAL PRIMARY KEY,
     site_name TEXT NOT NULL,
-    location TEXT,
-    installation_date DATE,
-    installation_cost INTEGER
+    location TEXT
 );
 
 CREATE TABLE solar_data (
@@ -21,45 +19,6 @@ CREATE TABLE solar_data (
     charging_power_w INTEGER,
     discharging_power_w INTEGER,
 
-    soc_percent SMALLINT CHECK (soc_percent BETWEEN 0 AND 100),
-    solar_status VARCHAR(10)
+    soc_percent SMALLINT CHECK (soc_percent BETWEEN 0 AND 100)
 );
 
-CREATE TABLE toy_solar_data (
-    id SERIAL PRIMARY KEY,
-    site_id INTEGER NOT NULL REFERENCES sites(site_id),
-
-    month SMALLINT NOT NULL CHECK (month BETWEEN 1 AND 12),
-    day SMALLINT NOT NULL CHECK (day BETWEEN 1 AND 31),
-    time TIME NOT NULL,
-
-    production_power_w INTEGER,
-    consumption_power_w INTEGER,
-    grid_power_w INTEGER,
-    purchasing_power_w INTEGER,
-    feed_in_power_w INTEGER,
-    battery_power_w INTEGER,
-    charging_power_w INTEGER,
-    discharging_power_w INTEGER,
-
-    soc_percent SMALLINT CHECK (soc_percent BETWEEN 0 AND 100),
-    solar_status VARCHAR(10),
-
-    UNIQUE (month, day, time)
-);
-
-
-CREATE TABLE provider_tariffs (
-    tariff_id SERIAL PRIMARY KEY,
-    provider_name TEXT NOT NULL,
-    buyback_rate DECIMAL,			-- feed-in tariff rate (c/kWh)
-    standing_charge DECIMAL,		-- rural standing charge per year (€)
-    day_rate DECIMAL, -- for TOU	-- day unit price (c/kWh)
-    night_rate DECIMAL,			-- night unit price (c/kWh)
-    peak_rate DECIMAL,			-- peak unit price (c/kWh)
-    peak_start TIME,			-- peak start
-    peak_end TIME,			-- peak end
-    night_start TIME,			-- night start
-    night_end TIME,			-- night end
-    last_updated DATE			-- last updated
-);

@@ -1,7 +1,8 @@
-// import express from 'express';
-//
-// const router = express.Router();
-//
-// router.get('/', (req, res) => {})
-//
-// export default router;
+import express from 'express';
+import { getGrossSavingsBySiteID } from '../controllers/finReportController.js';
+
+const router = express.Router();
+
+router.get('/grossSavings/:siteId', getGrossSavingsBySiteID);
+
+export default router;
