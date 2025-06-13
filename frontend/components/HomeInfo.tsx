@@ -26,6 +26,7 @@ const homeInfo = ({ temperature = '11°C', weather = 'Sunny', location = 'Co. We
 
 const styles = StyleSheet.create({
     header: {
+        marginTop: 25,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

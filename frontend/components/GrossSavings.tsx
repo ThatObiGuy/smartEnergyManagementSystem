@@ -23,6 +23,7 @@ const GrossEnergySavingsCard = ({ amount = "XXX.XX" }) => {
 
 const styles = StyleSheet.create({
     savingsCard: {
+        marginTop: 25,
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 20,

@@ -30,11 +30,99 @@ export async function getGrossSavingsBySiteID(req, res) {
             }
         }
 
-        res.status(200).send(Number(grossSavings.toFixed(2)));
+        res.status(200).json({grossSavings: Number(grossSavings.toFixed(2))});
 
     }
     catch (error) {
         console.log("Error getting the gross savings", error);
         res.status(500).json({ message: "Internal server error"});
+    }
+}
+
+// Function to get installation date by site ID
+export async function getInstallDateBySiteID(req, res) {
+    try {
+        const {siteId} = req.params;
+
+        const result = await sql`
+            SELECT installation_date
+            FROM sites
+            WHERE site_id = ${siteId}
+        `;
+
+        // Check if site exists
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Site not found" });
+        }
+
+        const installDate = result[0].installation_date;
+
+        res.status(200).json({installDate: installDate});
+
+    } catch (error) {
+            console.log("Error getting the installation date ", error);
+            res.status(500).json({ message: "Internal server error"});
+    }
+}
+
+// Function to get installation cost by site ID
+export async function getInstallCostBySiteID(req, res) {
+    try {
+        const {siteId} = req.params;
+
+        const result = await sql`
+            SELECT installation_cost
+            FROM sites
+            WHERE site_id = ${siteId}
+        `;
+
+        // Check if site exists
+        if (result.length === 0) {
+            return res.status(404).json({ message: "Site not found" });
+        }
+
+        const installCost = result[0].installation_cost;
+
+        res.status(200).json({installCost: installCost});
+
+    } catch (error) {
+        console.log("Error getting the installation date ", error);
+        res.status(500).json({ message: "Internal server error"});
+    }
+}
+
+// Function to get the average daily amount of energy sold back to the grid by site ID
+export async function getDailySaleToGridBySiteID(req, res) {
+    try {
+        const {siteId} = req.params;
+
+        const result = await sql`
+            WITH daily_energy_sold AS (SELECT
+                DATE (updated_time) AS day
+               , SUM (grid_power_w)/1000 AS daily_sold_energy
+            FROM solar_data
+            WHERE grid_power_w > 0 AND site_id = ${siteId}
+            GROUP BY DATE (updated_time)
+                )
+
+            SELECT PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY daily_sold_energy) AS lwr,
+    PERCENTILE_CONT(0.50) WITHIN
+            GROUP (ORDER BY daily_sold_energy) AS median,
+                PERCENTILE_CONT(0.75) WITHIN
+            GROUP (ORDER BY daily_sold_energy) AS upr
+            FROM daily_energy_sold;
+        `; // divide by 1000 to go from W to kW
+
+        const dailySaleToGrid = {
+            lwr: result[0].lwr,
+            median: result[0].median,
+            upr: result[0].upr
+        };
+
+        res.status(200).json({dailySaleToGrid});
+
+    } catch (error) {
+        console.log("Error getting the average daily amount of energy sold back to the grid ", error);
+        res.status(500).json({message: "Internal server error"});
     }
 }

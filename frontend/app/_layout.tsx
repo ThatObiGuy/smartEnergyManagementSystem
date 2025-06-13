@@ -11,21 +11,21 @@ export default function RootLayout() {
           }}
       >
         <Tabs.Screen
-            name="(tabs)/finReport"
+            name="(tabs)/FinReport"
             options={{
               title: "Financial Report",
               tabBarIcon: ({ color }) => <FontAwesome size={28} name="euro" color={color} />
             }}
         />
         <Tabs.Screen
-            name="index"
+            name="Index"
             options={{
               title: "Home",
               tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />
             }}
         />
         <Tabs.Screen
-            name="(tabs)/modelComp"
+            name="(tabs)/ModelComp"
             options={{
               title: "Model Comparison",
               tabBarIcon: ({ color }) => <AntDesign size={28} name="linechart" color={color} />
