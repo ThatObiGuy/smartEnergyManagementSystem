@@ -1,0 +1,26 @@
+CREATE TABLE sites (
+    site_id SERIAL PRIMARY KEY,
+    site_name TEXT NOT NULL,
+    location TEXT,
+    installation_date DATE,
+    installation_cost INTEGER
+);
+
+CREATE TABLE solar_data (
+    id SERIAL PRIMARY KEY,
+    site_id INTEGER NOT NULL REFERENCES sites(site_id),
+
+    updated_time TIMESTAMP NOT NULL,
+
+    production_power_w INTEGER,
+    consumption_power_w INTEGER,
+    grid_power_w INTEGER,
+    purchasing_power_w INTEGER,
+    feed_in_power_w INTEGER,
+    battery_power_w INTEGER,
+    charging_power_w INTEGER,
+    discharging_power_w INTEGER,
+
+    soc_percent SMALLINT CHECK (soc_percent BETWEEN 0 AND 100)
+);
+
