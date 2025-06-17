@@ -104,14 +104,14 @@ const styles = StyleSheet.create({
         color: colors.success,
     },
     lineToBattery: {
-        width: 60,
+        width: 85,
         height: 2,
         top: '50%',
         left: 90,
         marginTop: -1,
     },
     lineToHouse: {
-        width: 60,
+        width: 85,
         height: 2,
         top: '50%',
         right: 90,
