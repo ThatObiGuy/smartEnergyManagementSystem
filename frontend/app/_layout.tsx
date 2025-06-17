@@ -5,6 +5,7 @@ import { Tabs } from "expo-router";
 export default function RootLayout() {
   return (
       <Tabs
+          initialRouteName="Index" // Starts on the home screen
           screenOptions={{
             headerShown : false,
             tabBarActiveTintColor: 'blue',
