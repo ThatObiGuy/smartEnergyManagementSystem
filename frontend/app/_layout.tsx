@@ -5,12 +5,18 @@ import { Tabs } from "expo-router";
 export default function RootLayout() {
   return (
       <Tabs
-          initialRouteName="Index" // Starts on the home screen
+          initialRouteName="landing" // Starts on the landing page
           screenOptions={{
             headerShown : false,
-            tabBarActiveTintColor: 'blue',
           }}
       >
+      <Tabs.Screen
+          name="landing"
+          options={{
+              href: null, // Completely removes this tab from navigation
+              tabBarStyle: { display: 'none' } // Hide tab bar on landing page
+          }}
+      />
         <Tabs.Screen
             name="(tabs)/FinReport"
             options={{
@@ -19,7 +25,7 @@ export default function RootLayout() {
             }}
         />
         <Tabs.Screen
-            name="Index"
+            name="(tabs)/Index"
             options={{
               title: "Home",
               tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />

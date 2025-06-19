@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import HomeInfo from "../components/HomeInfo";
+import HomeInfo from "@/components/HomeInfo";
 import SystemDiagram from "@/components/SystemDiagram";
 import TimeSelector from "@/components/TimeSelector";
 import GridIndependance from "@/components/GridIndependance";
