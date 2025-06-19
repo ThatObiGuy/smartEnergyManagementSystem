@@ -22,7 +22,7 @@ const HomeInfo = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const BACKEND_URL = 'http://149.157.43.90:3000';
+    const BACKEND_URL = 'http://192.168.110.54:3000';
 
     useEffect(() => {
         const fetchWeather = async () => {

@@ -7,7 +7,7 @@ import PaybackProgress from "../../components/PaybackProgress";
 export default function FinReport() {
     const [grossSavings, setGrossSavings] = useState<string>("Loading...");
 
-    const BACKEND_URL = 'http://149.157.43.90:3000'; // local for now, will change when deploying.
+    const BACKEND_URL = 'http://192.168.110.54:3000'; // local for now, will change when deploying.
     const SITE_ID = '1'; // set as such for now, will be dynamic once we have multiple sites.
 
     useEffect(() => {
