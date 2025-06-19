@@ -17,7 +17,11 @@ interface WeatherData {
   };
 }
 
-const HomeInfo = () => {
+interface HomeInfoProps {
+  location: string;
+}
+
+const HomeInfo = ({ location }: HomeInfoProps) => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -28,11 +32,11 @@ const HomeInfo = () => {
         const fetchWeather = async () => {
             try {
                 const response = await fetch(
-                    `${BACKEND_URL}/api/weather/current/Moate,Westmeath`
+                    `${BACKEND_URL}/api/weather/current/${location}`
                 );
 
                 // Debugging
-                console.log(`${BACKEND_URL}/api/weather/current/Moate,Westmeath`);
+                console.log(`${BACKEND_URL}/api/weather/current/${location}`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -57,7 +61,7 @@ const HomeInfo = () => {
         };
 
         fetchWeather();
-    }, []);
+    }, [location]);
 
     // Show loading indicator while fetching data
     if (loading) {
@@ -86,7 +90,7 @@ const HomeInfo = () => {
     // Only access weatherData properties after confirming it exists
     const temperature = `${weatherData.current.temp_c}°C`;
     const weather = weatherData.current.condition.text;
-    const location = `${weatherData.location.name}, ${weatherData.location.region}`;
+    const locationDisplay = `${weatherData.location.name}, ${weatherData.location.region}`;
     const iconUrl = `https:${weatherData.current.condition.icon}`;
 
     return (
@@ -104,7 +108,7 @@ const HomeInfo = () => {
             </View>
 
             <View style={styles.headerRight}>
-                <Text style={styles.location}>{location}</Text>
+                <Text style={styles.location}>{locationDisplay}</Text>
                 <Ionicons name="location" size={24} color={colors.textSecondary} />
             </View>
         </View>

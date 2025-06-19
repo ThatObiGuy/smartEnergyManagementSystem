@@ -2,7 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/styles/colours';
 
-const GridIndependence = ({ percentage = 80 }) => {
+interface GridIndependenceProps {
+    percentage: number;
+}
+
+const GridIndependence = ({ percentage }: GridIndependenceProps) => {
     return (
         <View style={styles.gridIndependence}>
             <Text style={styles.gridText}>{percentage}%</Text>
