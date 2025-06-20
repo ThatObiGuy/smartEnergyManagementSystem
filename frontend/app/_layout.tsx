@@ -1,9 +1,11 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tabs } from "expo-router";
+import { SiteProvider } from '@/context/SiteContext';
 
 export default function RootLayout() {
   return (
+    <SiteProvider>
       <Tabs
           initialRouteName="landing" // Starts on the landing page
           screenOptions={{
@@ -39,5 +41,6 @@ export default function RootLayout() {
             }}
         />
       </Tabs>
+    </SiteProvider>
   );
 }

@@ -19,3 +19,14 @@ export async function getSiteByID(req, res) {
         res.status(500).json({ message: "Internal server error"});
     }
 }
+
+// Function to get independance summary by site ID and timeframe
+// export async function getIndepSummary(req, res) {
+//     try {
+//
+//     }
+//     catch (error) {
+//         console.log("Error getting the summary", error);
+//         res.status(500).json({ message: "Internal server error"});
+//     }
+// }

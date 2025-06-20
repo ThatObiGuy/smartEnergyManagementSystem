@@ -1,19 +1,20 @@
 import { View, Text } from 'react-native';
 import { useState, useEffect } from 'react';
+import { useSiteContext } from "@/context/SiteContext";
 import GrossSavings from "../../components/GrossSavings";
 import BatteryAdvice from "../../components/BatteryAdvice";
 import PaybackProgress from "../../components/PaybackProgress";
 
 export default function FinReport() {
+    const { siteId } = useSiteContext();
     const [grossSavings, setGrossSavings] = useState<string>("Loading...");
 
-    const BACKEND_URL = 'http://192.168.110.54:3000'; // local for now, will change when deploying.
-    const SITE_ID = '1'; // set as such for now, will be dynamic once we have multiple sites.
+    const BACKEND_URL = 'http://149.157.43.90:3000'; // local for now, will change when deploying.
 
     useEffect(() => {
         const fetchGrossSavings = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/finReport/grossSavings/${SITE_ID}`);
+                const response = await fetch(`${BACKEND_URL}/api/finReport/grossSavings/${siteId}`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

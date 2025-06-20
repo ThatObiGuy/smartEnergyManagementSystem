@@ -4,10 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/styles/colours';
 import { commonStyles } from '@/styles/commonStyles';
 import { router } from 'expo-router';
+import { useSiteContext } from '@/context/SiteContext';
 
 export default function Landing() {
-  const handleSiteSelection = () => {
-    // Navigate to the Index page when site 1 is selected
+  const { setSiteId } = useSiteContext();
+
+  const handleSiteSelection = (id: number) => {
+    // Set the selected site ID in context
+    setSiteId(id);
+    // Navigate to the Index page
     router.replace('/Index');
   };
 
@@ -20,13 +25,21 @@ export default function Landing() {
 
       <View style={styles.siteSelectionContainer}>
         <Text style={styles.siteSelectionTitle}>Select a site:</Text>
-        
+
         <TouchableOpacity 
           style={styles.siteButton} 
-          onPress={handleSiteSelection}
+          onPress={() => handleSiteSelection(1)}
         >
-          <Ionicons name="business" size={24} color={colors.white} />
-          <Text style={styles.siteButtonText}>Site 1</Text>
+          <Ionicons name="home" size={24} color={colors.white} />
+          <Text style={styles.siteButtonText}>Westmeath</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.siteButton} 
+          onPress={() => handleSiteSelection(2)}
+        >
+          <Ionicons name="home" size={24} color={colors.white} />
+          <Text style={styles.siteButtonText}>Kerry</Text>
         </TouchableOpacity>
       </View>
     </View>
