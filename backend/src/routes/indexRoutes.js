@@ -9,7 +9,4 @@ const router = express.Router();
 // Example: /api/site/1
 router.get('/site/:siteId', getSiteByID);
 
-// GET /api/grid-independence?site_id={id}
-//router.get('/site/:siteId', getIndepSummary);
-
 export default router;

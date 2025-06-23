@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
 import HomeInfo from "@/components/HomeInfo";
 import SystemDiagram from "@/components/SystemDiagram";
 import TimeSelector from "@/components/TimeSelector";
@@ -16,14 +16,16 @@ export default function Index() {
     const [currentLocation, setCurrentLocation] = useState('');
     const [currentStatusVector, setCurrentStatusVector] = useState('1,1,-1,1');
     const [batterySOC, setBatterySOC] = useState(75);
-    const [selectedTimeframe, setSelectedTimeframe] = useState('Day');
-    const [gridIndependence, setGridIndependence] = useState(70);
+    const [selectedTimeframe, setSelectedTimeframe] = useState('day');
+    const [energyStats, setEnergyStats] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const BACKEND_URL = 'http://149.157.43.90:3000';
+    const BACKEND_URL = 'http://192.168.110.108:3000';
 
     // Set location based on site ID
     useEffect(() => {
         const fetchSiteInfo = async () => {
+            setIsLoading(true);
             try {
                 const response = await fetch(`${BACKEND_URL}/api/site/${siteId}`);
 
@@ -34,9 +36,12 @@ export default function Index() {
                 const siteInfo = await response.json();
 
                 setCurrentLocation(siteInfo.location);
+                setEnergyStats(siteInfo.energy_stats);
             } catch (err) {
                 console.error('Error fetching site information:', err);
                 setCurrentLocation('Error');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -48,8 +53,19 @@ export default function Index() {
         router.replace('/landing');
     };
 
+    // Show loading indicator while fetching site data
+    if (isLoading) {
+        return (
+            <View style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={styles.loadingText}>Loading site data...</Text>
+            </View>
+        );
+    }
+
     return (
     <View style={styles.container}>
+        {/* Only render HomeInfo when site data is loaded */}
         <HomeInfo
             location={currentLocation}
         />
@@ -61,10 +77,13 @@ export default function Index() {
             selectedTimeframe={selectedTimeframe}
             onTimeframeChange={setSelectedTimeframe} />
         <GridIndependance
-            percentage={gridIndependence}
+            timeframe={selectedTimeframe}
+            energyStats={energyStats}
         />
-        <HomeGraph />
-
+        <HomeGraph 
+            timeframe={selectedTimeframe}
+            energyStats={energyStats}
+        />
         <TouchableOpacity 
             style={styles.returnButton}
             onPress={handleReturnToSiteSelection}
@@ -79,20 +98,33 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
-        paddingBottom: 70, // Add padding to make room for the return button
+        paddingBottom: 50, // Reduced padding to match smaller return button
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: colors.textSecondary,
     },
     returnButton: {
         ...commonStyles.button,
         ...commonStyles.primaryButton,
         flexDirection: 'row',
         position: 'absolute',
-        bottom: 10,
+        bottom: 5,
         left: 20,
         right: 20,
         justifyContent: 'center',
+        paddingVertical: 8, // Reduced padding to make button more compact
     },
     returnButtonText: {
         ...commonStyles.buttonText,
-        marginLeft: 10,
+        marginLeft: 8,
+        fontSize: 14, // Smaller font size
     },
 });

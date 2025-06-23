@@ -26,7 +26,7 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const BACKEND_URL = 'http://149.157.43.90:3000';
+    const BACKEND_URL = 'http://192.168.110.108:3000';
 
     useEffect(() => {
         const fetchWeather = async () => {
@@ -35,15 +35,12 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
                     `${BACKEND_URL}/api/weather/current/${location}`
                 );
 
-                // Debugging
-                console.log(`${BACKEND_URL}/api/weather/current/${location}`);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                
+
                 if (data.error) {
                     throw new Error(data.error.message || 'Weather API error');
                 }
