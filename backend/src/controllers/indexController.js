@@ -59,6 +59,13 @@ export async function getSiteByID(req, res) {
         // Calculate statistics for TOTAL (all data)
         const totalStats = await calculateStats(siteId, sql`1=1`);
 
+        // Calculate if data is live or simulated
+        const now = new Date();
+        const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+
+        const dataType = latestDate > fiveMinutesAgo ? 'Live' : 'Historical';
+
+
         // Combine all data and return
         const response = {
             ...site,
@@ -68,7 +75,8 @@ export async function getSiteByID(req, res) {
                 month: monthStats,
                 year: yearStats,
                 total: totalStats
-            }
+            },
+            dataType: dataType
         };
 
         res.json(response);

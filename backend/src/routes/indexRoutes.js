@@ -9,4 +9,6 @@ const router = express.Router();
 // Example: /api/site/1
 router.get('/site/:siteId', getSiteByID);
 
+// GET /api/currentStatus/:siteId
+
 export default router;
