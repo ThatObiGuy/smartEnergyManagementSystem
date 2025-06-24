@@ -94,7 +94,7 @@ async function calculateStats(siteId, timeCondition) {
         const totalsResult = await sql`
             SELECT 
                 SUM(production_power_w) as total_production,
-                SUM(consumption_power_w) as total_consumption
+                SUM(consumption_power_w) + SUM(CASE WHEN battery_power_w > 0 THEN battery_power_w ELSE 0 END) + SUM(feed_in_power_w) as total_consumption
             FROM solar_data
             WHERE site_id = ${siteId}
             AND ${timeCondition}
@@ -102,10 +102,17 @@ async function calculateStats(siteId, timeCondition) {
 
         // Calculate production breakdown
         const productionBreakdownResult = await sql`
-            SELECT 
-                SUM(CASE WHEN production_power_w > 0 THEN production_power_w - COALESCE(discharging_power_w, 0) - COALESCE(purchasing_power_w, 0) ELSE 0 END) as solar_production,
-                SUM(COALESCE(discharging_power_w, 0)) as battery_discharge,
-                SUM(COALESCE(feed_in_power_w, 0)) as grid_purchase
+            SELECT
+                SUM(LEAST(production_power_w, consumption_power_w)) as to_home,
+                SUM(LEAST(GREATEST(production_power_w - consumption_power_w, 0), charging_power_w)) AS to_battery,
+                SUM(
+                        GREATEST(
+                                production_power_w
+                                    - LEAST(production_power_w, consumption_power_w)
+                                    - LEAST(GREATEST(production_power_w - consumption_power_w, 0), charging_power_w),
+                                0
+                        )
+                ) AS to_grid
             FROM solar_data
             WHERE site_id = ${siteId}
             AND ${timeCondition}
@@ -113,10 +120,13 @@ async function calculateStats(siteId, timeCondition) {
 
         // Calculate consumption breakdown
         const consumptionBreakdownResult = await sql`
-            SELECT 
-                SUM(COALESCE(charging_power_w, 0)) as battery_charging,
-                SUM(COALESCE(feed_in_power_w, 0)) as grid_selling,
-                SUM(CASE WHEN consumption_power_w > 0 THEN consumption_power_w - COALESCE(charging_power_w, 0) - COALESCE(feed_in_power_w, 0) ELSE 0 END) as home_power
+            SELECT
+                SUM(LEAST(production_power_w, consumption_power_w)) AS from_solar,
+                SUM(-discharging_power_w) as from_battery,
+                SUM(CASE
+                        WHEN grid_power_w < 0 THEN -grid_power_w
+                        ELSE 0
+                    END) AS from_grid
             FROM solar_data
             WHERE site_id = ${siteId}
             AND ${timeCondition}
@@ -126,15 +136,15 @@ async function calculateStats(siteId, timeCondition) {
         return {
             total_production: totalsResult[0]?.total_production || 0,
             production_breakdown: {
-                solar_panels: productionBreakdownResult[0]?.solar_production || 0,
-                battery_discharge: productionBreakdownResult[0]?.battery_discharge || 0,
-                grid_purchase: productionBreakdownResult[0]?.grid_purchase || 0
+                to_home: productionBreakdownResult[0]?.to_home || 0,
+                to_battery: productionBreakdownResult[0]?.to_battery || 0,
+                to_grid: productionBreakdownResult[0]?.to_grid || 0
             },
             total_consumption: totalsResult[0]?.total_consumption || 0,
             consumption_breakdown: {
-                battery_charging: consumptionBreakdownResult[0]?.battery_charging || 0,
-                grid_selling: consumptionBreakdownResult[0]?.grid_selling || 0,
-                home_power: consumptionBreakdownResult[0]?.home_power || 0
+                from_solar: consumptionBreakdownResult[0]?.from_solar || 0,
+                from_battery: consumptionBreakdownResult[0]?.from_battery || 0,
+                from_grid: consumptionBreakdownResult[0]?.from_grid || 0
             }
         };
     } catch (error) {
@@ -142,15 +152,15 @@ async function calculateStats(siteId, timeCondition) {
         return {
             total_production: 0,
             production_breakdown: {
-                solar_panels: 0,
-                battery_discharge: 0,
-                grid_purchase: 0
+                to_home: 0,
+                to_battery: 0,
+                to_grid: 0
             },
             total_consumption: 0,
             consumption_breakdown: {
-                battery_charging: 0,
-                grid_selling: 0,
-                home_power: 0
+                from_solar: 0,
+                from_battery: 0,
+                from_grid: 0
             }
         };
     }

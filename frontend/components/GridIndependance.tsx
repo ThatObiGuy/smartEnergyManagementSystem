@@ -10,13 +10,13 @@ interface GridIndependenceProps {
 const GridIndependence = ({ timeframe, energyStats }) => {
 
     // Calculate percentage
-    const totalProd = energyStats?.[timeframe]?.total_production || 0;
-    const dependantProd = energyStats?.[timeframe]?.production_breakdown?.grid_purchase || 0;
+    const totalConsumption = energyStats?.[timeframe]?.total_consumption || 0;
+    const gridConsumption = energyStats?.[timeframe]?.consumption_breakdown?.from_grid || 0;
 
     // Calculate percentage, handling division by zero
     let percentage = 0;
-    if (totalProd > 0) {
-        percentage = ((totalProd - dependantProd) / totalProd) * 100;
+    if (totalConsumption > 0) {
+        percentage = ((totalConsumption - gridConsumption) / totalConsumption) * 100;
         // Round to 1 decimal place
         percentage = Math.round(percentage * 10) / 10;
     }

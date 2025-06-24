@@ -1,10 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '@/styles/colours';
 
 interface HomeGraphProps {
-    timeframe: string;
-    energyStats: any;
+    timeframe: string; // selected by user via TimeSelector component
+    energyStats: any; // in the form:
+    /*
+        "energy_stats": {
+    "day": {
+      "total_production": "12053",
+      "production_breakdown": {
+        "solar_panels": "11011",
+        "battery_discharge": "1042",
+        "grid_purchase": "5"
+      },
+      "total_consumption": "418193",
+      "consumption_breakdown": {
+        "battery_charging": "8943",
+        "grid_selling": "5",
+        "home_power": "409245"
+      }
+    }, "week", "month", "year" and "total".
+     */
 }
 
 const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
@@ -17,15 +34,13 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
         );
     }
 
-    // Normalize timeframe and get data
-    const normalizedTimeframe = timeframe?.toLowerCase() || 'day';
-    const timeframeData = energyStats && energyStats[normalizedTimeframe];
+    const timeframeData = energyStats[timeframe];
 
     // Handle missing data
     if (!timeframeData) {
         return (
             <View style={styles.container}>
-                <Text style={styles.errorText}>No data available for {normalizedTimeframe}</Text>
+                <Text style={styles.errorText}>No data available for {timeframe}</Text>
             </View>
         );
     }
@@ -39,26 +54,16 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
 
     // Get production values
     const totalProduction = getValue(timeframeData.total_production);
-    const solarProduction = getValue(timeframeData.production_breakdown?.solar_panels);
-    const batteryDischarge = getValue(timeframeData.production_breakdown?.battery_discharge);
+    const toHome = getValue(timeframeData.production_breakdown?.to_home);
+    const toBattery = getValue(timeframeData.production_breakdown?.to_battery);
+    const toGrid = getValue(timeframeData.production_breakdown?.to_grid);
 
     // Get consumption values
     const totalConsumption = getValue(timeframeData.total_consumption);
-    const batteryCharging = getValue(timeframeData.consumption_breakdown?.battery_charging);
-    const homePower = getValue(timeframeData.consumption_breakdown?.home_power);
+    const fromSolar = getValue(timeframeData.consumption_breakdown?.from_solar);
+    const fromBattery = getValue(timeframeData.consumption_breakdown?.from_battery);
+    const fromGrid = getValue(timeframeData.consumption_breakdown?.from_grid);
 
-    // Simplified chart data
-    const chartData = {
-        labels: ['Production', 'Consumption'],
-        data: [
-            [totalProduction, 0],
-            [0, totalConsumption]
-        ],
-        colors: [colors.chartGreen, colors.chartRed]
-    };
-
-    // Display title with proper capitalization
-    const displayTimeframe = normalizedTimeframe.charAt(0).toUpperCase() + normalizedTimeframe.slice(1);
 
     return (
         <View style={styles.container}>
@@ -69,17 +74,21 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
 
             <View style={styles.barContainer}>
                 <View style={styles.barGroup}>
-                    <Text style={styles.barLabel}>Production</Text>
+                    <Text style={styles.barLabel}>System has produced:</Text>
                     <View style={styles.bar}>
                         {totalProduction > 0 ? (
                             <>
                                 <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.chartGreen, 
-                                    flex: solarProduction / totalProduction || 0 
+                                    backgroundColor: colors.success,
+                                    flex: toHome / totalProduction || 0
                                 }]} />
                                 <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.chartBlue, 
-                                    flex: batteryDischarge / totalProduction || 0 
+                                    backgroundColor: colors.info,
+                                    flex: toBattery / totalProduction || 0
+                                }]} />
+                                <View style={[styles.barSegment, {
+                                    backgroundColor: colors.danger,
+                                    flex: toGrid / totalProduction || 0
                                 }]} />
                             </>
                         ) : (
@@ -89,18 +98,37 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
                     <Text style={styles.barValue}>{totalProduction} w</Text>
                 </View>
 
+                <View style={styles.legendContainer}>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendColor, { backgroundColor: colors.warning }]} />
+                        <Text style={styles.legendText}>To Home</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendColor, { backgroundColor: colors.info }]} />
+                        <Text style={styles.legendText}>To Battery</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.legendColor, { backgroundColor: colors.danger }]} />
+                        <Text style={styles.legendText}>To Grid</Text>
+                    </View>
+                </View>
+
                 <View style={styles.barGroup}>
-                    <Text style={styles.barLabel}>Consumption</Text>
+                    <Text style={styles.barLabel}>System has consumed:</Text>
                     <View style={styles.bar}>
                         {totalConsumption > 0 ? (
                             <>
                                 <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.chartOrange, 
-                                    flex: batteryCharging / totalConsumption || 0 
+                                    backgroundColor: colors.success,
+                                    flex: fromSolar / totalConsumption || 0
                                 }]} />
-                                <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.chartRed, 
-                                    flex: homePower / totalConsumption || 0 
+                                <View style={[styles.barSegment, {
+                                    backgroundColor: colors.info,
+                                    flex: fromBattery / totalConsumption || 0
+                                }]} />
+                                <View style={[styles.barSegment, {
+                                    backgroundColor: colors.danger,
+                                    flex: fromGrid / totalConsumption || 0
                                 }]} />
                             </>
                         ) : (
@@ -113,20 +141,16 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
 
             <View style={styles.legendContainer}>
                 <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.chartGreen }]} />
-                    <Text style={styles.legendText}>Solar</Text>
+                    <View style={[styles.legendColor, { backgroundColor: colors.success }]} />
+                    <Text style={styles.legendText}>From Solar</Text>
                 </View>
                 <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.chartBlue }]} />
-                    <Text style={styles.legendText}>Battery Discharge</Text>
+                    <View style={[styles.legendColor, { backgroundColor: colors.info }]} />
+                    <Text style={styles.legendText}>From Battery</Text>
                 </View>
                 <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.chartOrange }]} />
-                    <Text style={styles.legendText}>Battery Charging</Text>
-                </View>
-                <View style={styles.legendItem}>
-                    <View style={[styles.legendColor, { backgroundColor: colors.chartRed }]} />
-                    <Text style={styles.legendText}>Home Power</Text>
+                    <View style={[styles.legendColor, { backgroundColor: colors.danger }]} />
+                    <Text style={styles.legendText}>From Grid</Text>
                 </View>
             </View>
         </View>
@@ -165,7 +189,6 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 12,
         color: colors.gray,
-        marginBottom: 8,
         textAlign: 'center',
     },
     barContainer: {
@@ -192,20 +215,18 @@ const styles = StyleSheet.create({
     barValue: {
         fontSize: 10,
         color: colors.gray,
-        marginTop: 2,
         textAlign: 'right',
     },
     legendContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginTop: 8,
     },
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 10,
-        marginBottom: 3,
+        marginBottom: 5,
     },
     legendColor: {
         width: 10,
