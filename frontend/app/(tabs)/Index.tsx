@@ -14,6 +14,7 @@ import { commonStyles } from '@/styles/commonStyles';
 export default function Index() {
     const { siteId } = useSiteContext(); // Context lets us know which site has been selected
     const [currentLocation, setCurrentLocation] = useState('');
+    const [dataType, setDataType] = useState(''); // Are we using historical or live data
     const [currentStatusVector, setCurrentStatusVector] = useState('1,1,-1,1');
     const [batterySOC, setBatterySOC] = useState(75);
     const [selectedTimeframe, setSelectedTimeframe] = useState('day');
@@ -37,6 +38,7 @@ export default function Index() {
 
                 setCurrentLocation(siteInfo.location);
                 setEnergyStats(siteInfo.energy_stats);
+                setDataType(siteInfo.dataType); // Store the dataType from response
             } catch (err) {
                 console.error('Error fetching site information:', err);
                 setCurrentLocation('Error');
@@ -47,6 +49,31 @@ export default function Index() {
 
         fetchSiteInfo();
     }, [siteId]);
+
+    // Fetch site status based on dataType
+    useEffect(() => {
+        const fetchSiteStatus = async () => {
+            if (!siteId || !dataType) return;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/status/${siteId}?dataType=${dataType}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const statusData = await response.json();
+
+                setCurrentStatusVector(statusData.solar_status);
+                setBatterySOC(statusData.soc_percent);
+
+            } catch (err) {
+                console.error('Error fetching site status:', err);
+            }
+        };
+
+        fetchSiteStatus();
+    }, [siteId, dataType]);
 
     // Navigate back to site selection
     const handleReturnToSiteSelection = () => {
@@ -72,6 +99,7 @@ export default function Index() {
         <SystemDiagram
             status={currentStatusVector}
             soc={batterySOC}
+            dataType={dataType}
         />
         <TimeSelector
             selectedTimeframe={selectedTimeframe}
@@ -117,14 +145,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         position: 'absolute',
         bottom: 5,
-        left: 20,
-        right: 20,
+        left: 10,
+        right: 10,
         justifyContent: 'center',
-        paddingVertical: 8, // Reduced padding to make button more compact
+        paddingVertical: 10, // Reduced padding to make button more compact
     },
     returnButtonText: {
         ...commonStyles.buttonText,
         marginLeft: 8,
-        fontSize: 14, // Smaller font size
+        fontSize: 16,
     },
 });

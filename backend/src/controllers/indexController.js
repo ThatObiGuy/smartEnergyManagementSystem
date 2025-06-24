@@ -155,3 +155,58 @@ async function calculateStats(siteId, timeCondition) {
         };
     }
 }
+
+// Function to get relevant system status + SOC by site ID
+export async function getStatusByID(req, res) {
+    try {
+        const siteId = req.params.siteId;
+        const dataType = req.query.dataType;
+
+        if (!siteId || !dataType) {
+            return res.status(400).json({ error: 'Site ID and dataType are required' });
+        }
+
+        let result;
+
+        if (dataType === 'Live') {
+            // Get most recent solar_data entry
+            result = await sql`
+                SELECT soc_percent, solar_status 
+                FROM solar_data 
+                WHERE site_id = ${siteId}
+                ORDER BY updated_time DESC 
+                LIMIT 1
+            `;
+        } else if (dataType === 'Historical') {
+            // Get time rounded down to nearest 5 minutes
+            const now = new Date();
+            const month = now.getMonth() + 1; // JavaScript months are 0-indexed
+            const day = now.getDate();
+
+            // Round current time down to nearest 5 minute multiple
+            const hours = now.getHours();
+            const minutes = Math.floor(now.getMinutes() / 5) * 5;
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+            result = await sql`
+                SELECT soc_percent, solar_status 
+                FROM toy_solar_data 
+                WHERE site_id = ${siteId}
+                AND month = ${month}
+                AND day = ${day}
+                AND time = ${timeString}
+            `;
+        } else {
+            return res.status(400).json({ error: 'Invalid dataType' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'No data found' });
+        }
+
+        res.json(result[0]);
+    } catch (err) {
+        console.error('Error fetching site status:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+}

@@ -43,6 +43,7 @@ CREATE TABLE toy_solar_data (
     discharging_power_w INTEGER,
 
     soc_percent SMALLINT CHECK (soc_percent BETWEEN 0 AND 100),
+    solar_status VARCHAR(10),
 
     UNIQUE (month, day, time)
 );

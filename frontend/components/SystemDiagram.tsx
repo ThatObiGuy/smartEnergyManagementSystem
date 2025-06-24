@@ -16,10 +16,8 @@ interface SystemDiagramProps {
    * Example: "1,1,-1,1" means solar producing, battery charging, home consuming, grid exporting
    */
   status?: string;
-  /**
-   * State of Charge (SOC) of the battery as a percentage (0-100)
-   */
-  soc?: number;
+  soc?: number; // State of Charge (SOC) of the battery as a percentage (0-100)
+  dataType?: string; // Tells us whether data displayed graph is based on live data or simulated from historical data
 }
 
 // Flow state constants
@@ -27,7 +25,7 @@ const FLOW_PRODUCING = 1;
 const FLOW_CONSUMING = -1;
 const FLOW_NONE = 0;
 
-const SystemDiagram = ({ status = '1,1,-1,1', soc = 75 }: SystemDiagramProps) => {
+    const SystemDiagram = ({ status = '1,1,-1,1', soc = 75, dataType = 'Live' }: SystemDiagramProps) => {
     // Parse the status string into individual flow states
     const [solarFlow, batteryFlow, homeFlow, gridFlow] = status.split(',').map(Number);
 
@@ -166,6 +164,12 @@ const SystemDiagram = ({ status = '1,1,-1,1', soc = 75 }: SystemDiagramProps) =>
     };
     return (
         <View style={styles.diagramContainer}>
+            {/* Data Type Indicator */}
+            <View style={[styles.dataTypeIndicator, dataType === 'Live' ? styles.liveIndicator : null]}>
+                <Text style={styles.dataTypeText}>
+                    {dataType === 'Live' ? 'LIVE' : 'SIMULATED HISTORICAL'}
+                </Text>
+            </View>
             {/* Connection Lines */}
             <View style={styles.connectionLines}>
                 <View style={[
@@ -231,6 +235,25 @@ const SystemDiagram = ({ status = '1,1,-1,1', soc = 75 }: SystemDiagramProps) =>
 };
 
 const styles = StyleSheet.create({
+    liveIndicator: {
+        backgroundColor: colors.info,
+    },
+    dataTypeIndicator: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: colors.lightGray,
+        paddingHorizontal: 6,
+        paddingVertical: 3,
+        borderRadius: 4,
+        zIndex: 15,
+        opacity: 0.85,
+    },
+    dataTypeText: {
+        color: colors.white,
+        fontSize: 10,
+        fontWeight: '500',
+    },
     socText: {
         fontSize: 12,
         fontWeight: 'bold',
@@ -239,7 +262,7 @@ const styles = StyleSheet.create({
     diagramContainer: {
         height: 250,
         width: '100%',
-        marginVertical: 20,
+        marginVertical: 10,
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',

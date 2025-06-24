@@ -21,8 +21,6 @@ const GridIndependence = ({ timeframe, energyStats }) => {
         percentage = Math.round(percentage * 10) / 10;
     }
 
-    console.log(energyStats?.[timeframe]?.production_breakdown?.grid_purchase);
-
     return (
         <View style={styles.gridIndependence}>
             <Text style={styles.gridText}>{percentage}%</Text>
