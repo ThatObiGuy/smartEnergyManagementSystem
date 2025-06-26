@@ -61,9 +61,9 @@ export async function getSiteByID(req, res) {
 
         // Calculate if data is live or simulated
         const now = new Date();
-        const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+        const oneAndHalfHoursAgo = new Date(now.getTime() - 90 * 60 * 1000);
 
-        const dataType = latestDate > fiveMinutesAgo ? 'Live' : 'Historical';
+        const dataType = latestDate > oneAndHalfHoursAgo ? 'Live' : 'Historical';
 
 
         // Combine all data and return

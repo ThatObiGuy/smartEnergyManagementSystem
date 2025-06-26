@@ -9,7 +9,7 @@ export default function FinReport() {
     const { siteId } = useSiteContext();
     const [grossSavings, setGrossSavings] = useState<string>("Loading...");
 
-    const BACKEND_URL = 'http://192.168.110.108:3000'; // local for now, will change when deploying.
+    const BACKEND_URL = 'http://192.168.110.156:3000'; // local for now, will change when deploying.
 
     useEffect(() => {
         const fetchGrossSavings = async () => {

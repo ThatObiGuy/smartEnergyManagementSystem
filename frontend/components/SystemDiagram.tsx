@@ -236,7 +236,7 @@ const FLOW_NONE = 0;
 
 const styles = StyleSheet.create({
     liveIndicator: {
-        backgroundColor: colors.info,
+        backgroundColor: colors.danger,
     },
     dataTypeIndicator: {
         position: 'absolute',

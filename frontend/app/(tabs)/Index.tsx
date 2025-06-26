@@ -21,7 +21,7 @@ export default function Index() {
     const [energyStats, setEnergyStats] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const BACKEND_URL = 'http://192.168.110.108:3000';
+    const BACKEND_URL = 'http://192.168.110.156:3000';
 
     // Set location based on site ID
     useEffect(() => {
