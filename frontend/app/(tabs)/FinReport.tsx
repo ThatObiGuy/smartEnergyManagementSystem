@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSiteContext } from "@/context/SiteContext";
 import GrossSavings from "../../components/GrossSavings";
@@ -7,46 +7,79 @@ import PaybackProgress from "../../components/PaybackProgress";
 
 export default function FinReport() {
     const { siteId } = useSiteContext();
-    const [grossSavings, setGrossSavings] = useState<string>("Loading...");
+    const [dailySaleToGrid, setDailySaleToGrid] = useState({ lwr: 1, median: 4, upr: 59.5 });
+    const [installationDate, setInstallationDate] = useState('2023-01-15');
+    const [installationCost, setInstallationCost] = useState(15750);
+    const [annualGrossSavings, setAnnualGrossSavings] = useState(12000);
 
-    const BACKEND_URL = 'http://192.168.110.156:3000'; // local for now, will change when deploying.
+    const BACKEND_URL = 'http://149.157.114.162:3000'; // local for now, will change when deploying.
 
     useEffect(() => {
-        const fetchGrossSavings = async () => {
+        const fetchFinancialData = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/finReport/grossSavings/${siteId}`);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                // Fetch daily sale to grid data
+                const dailySaleResponse = await fetch(`${BACKEND_URL}/api/finReport/dailySaleToGrid/${siteId}`);
+                if (dailySaleResponse.ok) {
+                    const dailySaleData = await dailySaleResponse.json();
+                    setDailySaleToGrid(dailySaleData.dailySaleToGrid);
                 }
 
-                const grossSavings = await response.json();
+                // Fetch installation date
+                const installDateResponse = await fetch(`${BACKEND_URL}/api/finReport/installationDate/${siteId}`);
+                if (installDateResponse.ok) {
+                    const installDateData = await installDateResponse.json();
+                    setInstallationDate(installDateData.installDate);
+                }
 
-                setGrossSavings(grossSavings.grossSavings.toString());
+                // Fetch installation cost
+                const installCostResponse = await fetch(`${BACKEND_URL}/api/finReport/installationCost/${siteId}`);
+                if (installCostResponse.ok) {
+                    const installCostData = await installCostResponse.json();
+                    setInstallationCost(installCostData.installCost);
+                }
+
             } catch (err) {
-                console.error('Error fetching gross savings:', err);
-                setGrossSavings('Error');
+                console.error('Error fetching financial data:', err);
             }
         };
 
-        fetchGrossSavings();
-    }, []);
+        fetchFinancialData();
+    }, [siteId]);
 
     return (
-        <View>
-            <GrossSavings
-                amount={grossSavings}
-            />
+        <View style={styles.container}>
+            <GrossSavings />
+
             <BatteryAdvice
                 batteryCost={2000}
                 batteryCapacity={5}
-                dailySaleToGrid={{ lwr: 1, median: 4, upr: 59.5 }}
+                dailySaleToGrid={dailySaleToGrid}
             />
+
             <PaybackProgress
-                installationDate={'2023-01-15'}
-                installationCost={15750}
-                annualGrossSavings={12000}
+                installationDate={installationDate}
+                installationCost={installationCost}
+                annualGrossSavings={annualGrossSavings}
             />
+
+            <Text style={styles.disclaimer}>
+                * Prices based on Irish rural smart meter tariffs with no consideration for discounts.
+            </Text>
         </View>
     );
-} // we will need to get the amount from the backend for all these figures, but that may come in time.
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+    },
+    disclaimer: {
+        fontSize: 12,
+        fontStyle: 'italic',
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 5,
+        marginBottom: 10,
+    }
+});

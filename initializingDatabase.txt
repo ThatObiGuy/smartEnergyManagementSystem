@@ -49,3 +49,17 @@ CREATE TABLE toy_solar_data (
 );
 
 
+CREATE TABLE provider_tariffs (
+    tariff_id SERIAL PRIMARY KEY,
+    provider_name TEXT NOT NULL,
+    buyback_rate DECIMAL,			-- feed-in tariff rate (c/kWh)
+    standing_charge DECIMAL,		-- rural standing charge per year (€)
+    day_rate DECIMAL, -- for TOU	-- day unit price (c/kWh)
+    night_rate DECIMAL,			-- night unit price (c/kWh)
+    peak_rate DECIMAL,			-- peak unit price (c/kWh)
+    peak_start TIME,			-- peak start
+    peak_end TIME,			-- peak end
+    night_start TIME,			-- night start
+    night_end TIME,			-- night end
+    last_updated DATE			-- last updated
+);
