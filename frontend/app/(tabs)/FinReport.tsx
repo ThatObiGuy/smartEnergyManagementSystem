@@ -50,21 +50,21 @@ export default function FinReport() {
 
         const fetchFinancialData = async () => {
             try {
-                // Fetch daily sale to grid data
+                // Fetch daily sale to grid data for the battery advice component
                 const dailySaleResponse = await fetch(`${BACKEND_URL}/api/finReport/dailySaleToGrid/${siteId}`);
                 if (dailySaleResponse.ok) {
                     const dailySaleData = await dailySaleResponse.json();
                     setDailySaleToGrid(dailySaleData.dailySaleToGrid);
                 }
 
-                // Fetch runtime data (days count)
+                // Fetch runtime data (days count) for the gross savings and payback period components
                 const runtimeResponse = await fetch(`${BACKEND_URL}/api/finReport/runTime/${siteId}`);
                 if (runtimeResponse.ok) {
                     const runtimeData = await runtimeResponse.json();
                     setDaysCount(runtimeData.daysCount);
                 }
 
-                // Fetch provider savings data
+                // Fetch provider savings data for the gross savings and payback period components
                 setIsLoadingProviders(true);
                 const providerSavingsResponse = await fetch(`${BACKEND_URL}/api/finReport/grossSavingsAllProviders/${siteId}`);
                 if (providerSavingsResponse.ok) {
@@ -113,14 +113,14 @@ export default function FinReport() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
+        padding: 5,
     },
     disclaimer: {
-        fontSize: 12,
+        fontSize: 10,
         fontStyle: 'italic',
         color: '#666',
         textAlign: 'center',
-        marginTop: 5,
-        marginBottom: 10,
+        marginTop: 2,
+        marginBottom: 2,
     }
 });

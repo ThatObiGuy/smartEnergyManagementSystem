@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     savingsHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 8,
     },
     iconContainer: {
         marginRight: 15,
@@ -172,33 +172,33 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     savingsLabel: {
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: '600',
         color: '#666',
-        marginBottom: 5,
+        marginBottom: 3,
     },
     savingsAmount: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
     },
     loadingText: {
         textAlign: 'center',
-        marginTop: 10,
+        marginTop: 5,
         color: '#666',
     },
     providerInfo: {
-        marginTop: 10,
+        marginTop: 5,
         borderTopWidth: 1,
         borderTopColor: '#eee',
-        paddingTop: 15,
+        paddingTop: 8,
     },
     providerSelector: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        padding: 6,
         backgroundColor: '#f5f5f5',
-        borderRadius: 8,
+        borderRadius: 6,
     },
     providerLogo: {
         width: 40,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     providerName: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '500',
     },
     dropdownIcon: {
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     providerItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
+        padding: 6,
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     },
@@ -243,50 +243,50 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     providerItemName: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '500',
     },
     providerItemSavings: {
-        fontSize: 12,
+        fontSize: 10,
         color: '#666',
     },
     savingsDetails: {
-        marginTop: 15,
-        padding: 10,
+        marginTop: 8,
+        padding: 6,
         backgroundColor: '#f9f9f9',
-        borderRadius: 8,
+        borderRadius: 6,
     },
     savingsDetailRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5,
+        marginBottom: 3,
     },
     savingsDetailLabel: {
-        fontSize: 14,
+        fontSize: 12,
         color: '#666',
     },
     savingsDetailValue: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '500',
     },
     savingsDetailTotal: {
-        marginTop: 5,
-        paddingTop: 5,
+        marginTop: 3,
+        paddingTop: 3,
         borderTopWidth: 1,
         borderTopColor: '#ddd',
     },
     savingsDetailTotalLabel: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '600',
         color: '#333',
     },
     savingsDetailTotalValue: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
         color: '#333',
     },
     disclaimer: {
-        fontSize: 12,
+        fontSize: 10,
         fontStyle: 'italic',
         color: '#666',
         marginTop: 2,

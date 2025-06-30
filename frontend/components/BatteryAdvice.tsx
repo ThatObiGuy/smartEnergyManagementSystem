@@ -19,7 +19,7 @@ const BatteryAdvice = ({
                            dailySaleToGrid
                        }: BatteryAdviceProps) => {
 
-    
+
     const generateAdvice = () => {
         // Check if all required props are provided
         if (!dailySaleToGrid || !batteryCost || !batteryCapacity) {
@@ -30,9 +30,9 @@ const BatteryAdvice = ({
         const dailySavings = median * 0.36; // Convert cents to euros - taken 36 cents as a sort of guess TODO: Investigate this figure.
         const annualSavings = dailySavings * 365;
         const paybackYears = Math.round((batteryCost / annualSavings) * 10) / 10;
-        
+
         const shouldBuy = paybackYears <= 6;
-        
+
         return `Given a ${batteryCapacity} kw battery costs €${batteryCost.toLocaleString()} and you're selling a average of ${median} kW back to the grid on an average day, you ${shouldBuy ? 'should' : 'shouldn\'t'} buy ${batteryCapacity} kw another battery. ${shouldBuy ? `The payback period would be approximately ${paybackYears} years.` : `The payback period would be too long at ${paybackYears} years.`}`;
     };
 
@@ -60,45 +60,45 @@ const styles = StyleSheet.create({
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 1,
         },
         shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowRadius: 2,
+        elevation: 3,
         alignItems: 'center',
     },
     iconContainer: {
-        marginBottom: 15,
+        marginBottom: 8,
     },
     battery: {
         position: 'relative',
-        width: 30,
-        height: 20,
+        width: 24,
+        height: 16,
         backgroundColor: '#f0f0f0',
-        borderRadius: 3,
-        borderWidth: 2,
+        borderRadius: 2,
+        borderWidth: 1,
         borderColor: '#333',
         alignItems: 'center',
         justifyContent: 'center',
     },
     batteryTip: {
         position: 'absolute',
-        right: -4,
+        right: -3,
         top: '50%',
-        marginTop: -3,
-        width: 3,
-        height: 6,
+        marginTop: -2,
+        width: 2,
+        height: 4,
         backgroundColor: '#333',
         borderRadius: 1,
     },
     batteryPlus: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: 'bold',
         color: '#333',
     },
     adviceText: {
-        fontSize: 14,
-        lineHeight: 20,
+        fontSize: 12,
+        lineHeight: 16,
         color: '#666',
         textAlign: 'center',
     },
