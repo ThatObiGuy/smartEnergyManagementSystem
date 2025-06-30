@@ -5,17 +5,42 @@ import GrossSavings from "../../components/GrossSavings";
 import BatteryAdvice from "../../components/BatteryAdvice";
 import PaybackProgress from "../../components/PaybackProgress";
 
+interface ProviderSavings {
+    tariffId: number;
+    providerName: string;
+    grossSavings: number;
+    costWithoutPV: number;
+    actualSpending: number;
+}
+
 export default function FinReport() {
     const { siteId, installationDate, installationCost } = useSiteContext();
     const [dailySaleToGrid, setDailySaleToGrid] = useState({ lwr: 0, median: 0, upr: 0 });
     const [localInstallationDate, setLocalInstallationDate] = useState('');
     const [localInstallationCost, setLocalInstallationCost] = useState(0);
+    const [daysCount, setDaysCount] = useState<number | undefined>(undefined);
+    const [providers, setProviders] = useState<ProviderSavings[]>([]);
+    const [isLoadingProviders, setIsLoadingProviders] = useState(true);
     const [annualGrossSavings, setAnnualGrossSavings] = useState(0);
+    const [selectedProvider, setSelectedProvider] = useState<ProviderSavings | null>(null);
 
     const BACKEND_URL = 'http://192.168.110.44:3000'; // local for now, will change when deploying.
 
-    useEffect(() => {
+    // Handler for provider selection
+    const handleProviderSelect = (provider: ProviderSavings) => {
+        setSelectedProvider(provider);
+    };
 
+    // Calculate annual gross savings when selected provider or days count changes
+    useEffect(() => {
+        if (selectedProvider && daysCount) {
+            // Calculate annual gross savings: ((gross savings) / daysCount) * 365
+            const annual = (selectedProvider.grossSavings / daysCount) * 365;
+            setAnnualGrossSavings(annual);
+        }
+    }, [selectedProvider, daysCount]);
+
+    useEffect(() => {
         if (installationDate) {
             setLocalInstallationDate(installationDate);
         }
@@ -32,8 +57,25 @@ export default function FinReport() {
                     setDailySaleToGrid(dailySaleData.dailySaleToGrid);
                 }
 
+                // Fetch runtime data (days count)
+                const runtimeResponse = await fetch(`${BACKEND_URL}/api/finReport/runTime/${siteId}`);
+                if (runtimeResponse.ok) {
+                    const runtimeData = await runtimeResponse.json();
+                    setDaysCount(runtimeData.daysCount);
+                }
+
+                // Fetch provider savings data
+                setIsLoadingProviders(true);
+                const providerSavingsResponse = await fetch(`${BACKEND_URL}/api/finReport/grossSavingsAllProviders/${siteId}`);
+                if (providerSavingsResponse.ok) {
+                    const providerSavingsData = await providerSavingsResponse.json();
+                    setProviders(providerSavingsData.providers);
+                }
+                setIsLoadingProviders(false);
+
             } catch (err) {
                 console.error('Error fetching financial data:', err);
+                setIsLoadingProviders(false);
             }
         };
 
@@ -42,7 +84,12 @@ export default function FinReport() {
 
     return (
         <View style={styles.container}>
-            <GrossSavings />
+            <GrossSavings
+                daysCount={daysCount}
+                providers={providers}
+                isLoading={isLoadingProviders}
+                onProviderSelect={handleProviderSelect}
+            />
 
             <BatteryAdvice
                 batteryCost={2000}

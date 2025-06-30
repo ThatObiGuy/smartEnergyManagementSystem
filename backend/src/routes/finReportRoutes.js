@@ -1,14 +1,14 @@
 import express from 'express';
 import {
-    getGrossSavingsBySiteID,
-    getGrossSavingsAllProviders,
+    getGrossSavingsAllProvidersBySiteID,
+    finReportBySiteID,
     getDailySaleToGridBySiteID
 } from '../controllers/finReportController.js';
 
 const router = express.Router();
 
-router.get('/grossSavings/:siteId', getGrossSavingsBySiteID);
-router.get('/grossSavingsAllProviders/:siteId', getGrossSavingsAllProviders);
+router.get('/grossSavingsAllProviders/:siteId', getGrossSavingsAllProvidersBySiteID);
+router.get('/runTime/:siteId', finReportBySiteID);
 router.get('/dailySaleToGrid/:siteId', getDailySaleToGridBySiteID);
 
 export default router;

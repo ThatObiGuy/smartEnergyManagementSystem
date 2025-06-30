@@ -1,79 +1,7 @@
 import { sql } from "../config/db.js";
 
-// Function to get gross savings by site ID - not currently confident in the maths but it's a start
-export async function getGrossSavingsBySiteID(req, res) {
-    try {
-        const { siteId } = req.params;
-        const providerId = req.query.providerId || 1; // Default to first provider if not specified
-
-        // Get provider tariff information
-        const providerTariff = await sql`
-            SELECT * FROM provider_tariffs WHERE tariff_id = ${providerId}
-        `;
-
-        if (providerTariff.length === 0) {
-            return res.status(404).json({ message: "Provider tariff not found" });
-        }
-
-        const tariff = providerTariff[0];
-
-        // SQL query to get hourly consumption and grid data in KWH
-        const hourlyData = await sql`
-            SELECT 
-                EXTRACT(HOUR FROM updated_time) as hour,
-                SUM(consumption_power_w * (1.0/12)) / 1000 as total_consumption_kwh,
-                SUM(CASE WHEN grid_power_w < 0 THEN ABS(grid_power_w) * (1.0/12) ELSE 0 END) / 1000 as grid_purchases_kwh,
-                SUM(CASE WHEN grid_power_w > 0 THEN grid_power_w * (1.0/12) ELSE 0 END) / 1000 as feed_in_kwh
-            FROM solar_data
-            WHERE site_id = ${siteId}
-            GROUP BY EXTRACT(HOUR FROM updated_time)
-            ORDER BY hour
-        `; // We need to divide by 1000 to convert from Wh to kWh and multiply by 1/12 as we are getting 5 minute windows within the data
-
-        let costWithoutPV = 0;
-        let actualSpending = 0;
-
-        // Calculate cost without PV/Battery System and actual spending
-        for (const entry of hourlyData) {
-            const hour = entry.hour;
-            const time = new Date();
-            time.setHours(hour, 0, 0, 0);
-
-            // Determine which rate to use based on time of day
-            let rate;
-            if (isPeakTime(time, tariff.peak_start, tariff.peak_end)) {
-                rate = tariff.peak_rate;
-            } else if (isNightTime(time, tariff.night_start, tariff.night_end)) {
-                rate = tariff.night_rate;
-            } else {
-                rate = tariff.day_rate;
-            }
-
-            // Total Consumption × Grid Tariff Rates = Cost without PV/Battery System
-            costWithoutPV += entry.total_consumption_kwh * rate;
-
-            // (Grid Purchases × Purchase Rates) - (Feed-in × Feed-in Rates) = What the consumer is actually spending on energy
-            actualSpending += (entry.grid_purchases_kwh * rate) - (entry.feed_in_kwh * (tariff.buyback_rate || 0));
-        }
-
-        // Gross savings = Cost without PV/Battery System - What the consumer is actually spending on energy
-        const grossSavings = costWithoutPV - actualSpending;
-
-        res.status(200).json({
-            grossSavings: Number(grossSavings.toFixed(2)),
-            costWithoutPV: Number(costWithoutPV.toFixed(2)),
-            actualSpending: Number(actualSpending.toFixed(2)),
-            providerName: tariff.provider_name
-        });
-    }
-    catch (error) {
-        console.log("Error getting the gross savings", error);
-        res.status(500).json({ message: "Internal server error"});
-    }
-}
-
 // Function to get gross savings for all providers by site ID
-export async function getGrossSavingsAllProviders(req, res) {
+export async function getGrossSavingsAllProvidersBySiteID(req, res) {
     try {
         const { siteId } = req.params;
 
@@ -182,6 +110,33 @@ function isNightTime(time, nightStart, nightEnd) {
     }
 
     return time >= nightStartTime && time < nightEndTime;
+}
+
+// Function to get the no.days in the db by site ID
+export async function finReportBySiteID(req, res) {
+    try {
+        const { siteId } = req.params;
+
+        // Query to count distinct days where data was recorded for the site
+        const result = await sql`
+            SELECT COUNT(DISTINCT DATE(updated_time)) AS days_count
+            FROM solar_data
+            WHERE site_id = ${siteId}
+        `;
+
+        // Check if we got results
+        if (result.length === 0) {
+            return res.status(404).json({ message: "No data found for this site" });
+        }
+
+        // Return the count of days
+        res.status(200).json({
+            daysCount: result[0].days_count
+        });
+    } catch (error) {
+        console.log("Error getting the number of days with recorded data", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 }
 
 // Function to get the average daily amount of energy sold back to the grid by site ID

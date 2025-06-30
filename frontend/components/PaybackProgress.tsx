@@ -12,13 +12,16 @@ const PaybackProgressChart: React.FC<PaybackProgressChartProps> = ({
     installationCost,
     annualGrossSavings
 }) => {
+    // Format installation date to show only the date part (YYYY-MM-DD)
+    const formattedDate = installationDate ? installationDate.split('T')[0] : '';
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Payback Progress</Text>
-            
+
             <View style={styles.propContainer}>
                 <Text style={styles.propLabel}>Installation Date:</Text>
-                <Text style={styles.propValue}>{installationDate}</Text>
+                <Text style={styles.propValue}>{formattedDate}</Text>
             </View>
             
             <View style={styles.propContainer}>

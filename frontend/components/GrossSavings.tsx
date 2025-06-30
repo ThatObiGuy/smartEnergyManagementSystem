@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { useSiteContext } from "@/context/SiteContext";
 
 interface ProviderSavings {
     tariffId: number;
@@ -10,41 +9,28 @@ interface ProviderSavings {
     actualSpending: number;
 }
 
-const GrossEnergySavingsCard = ({ amount = "XXX.XX" }) => {
-    const { siteId } = useSiteContext();
-    const [isLoading, setIsLoading] = useState(true);
-    const [providers, setProviders] = useState<ProviderSavings[]>([]);
+interface GrossEnergySavingsCardProps {
+    amount?: string;
+    daysCount?: number;
+    providers: ProviderSavings[];
+    isLoading: boolean;
+    onProviderSelect?: (provider: ProviderSavings) => void;
+}
+
+const GrossEnergySavingsCard = ({ amount = "XXX.XX", daysCount, providers, isLoading, onProviderSelect }: GrossEnergySavingsCardProps) => {
     const [selectedProvider, setSelectedProvider] = useState<ProviderSavings | null>(null);
     const [expanded, setExpanded] = useState(false);
 
-    const BACKEND_URL = 'http://192.168.110.44:3000';
-
     useEffect(() => {
-        const fetchProviderSavings = async () => {
-            setIsLoading(true);
-            try {
-                const response = await fetch(`${BACKEND_URL}/api/finReport/grossSavingsAllProviders/${siteId}`);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setProviders(data.providers);
-
-                // Set the first provider as selected by default
-                if (data.providers && data.providers.length > 0) {
-                    setSelectedProvider(data.providers[0]);
-                }
-            } catch (err) {
-                console.error('Error fetching provider savings:', err);
-            } finally {
-                setIsLoading(false);
+        // Only set the first provider as selected by default if no provider is currently selected
+        if (providers && providers.length > 0 && !selectedProvider) {
+            setSelectedProvider(providers[0]);
+            // Call the callback with the first provider
+            if (onProviderSelect) {
+                onProviderSelect(providers[0]);
             }
-        };
-
-        fetchProviderSavings();
-    }, [siteId]);
+        }
+    }, [providers, onProviderSelect, selectedProvider]);
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
@@ -53,6 +39,10 @@ const GrossEnergySavingsCard = ({ amount = "XXX.XX" }) => {
     const selectProvider = (provider: ProviderSavings) => {
         setSelectedProvider(provider);
         setExpanded(false);
+        // Call the callback with the selected provider
+        if (onProviderSelect) {
+            onProviderSelect(provider);
+        }
     };
 
     const getProviderLogo = (providerName: string) => {
@@ -84,6 +74,11 @@ const GrossEnergySavingsCard = ({ amount = "XXX.XX" }) => {
 
                 <View style={styles.savingsText}>
                     <Text style={styles.savingsLabel}>COMPARE ENERGY PROVIDERS</Text>
+                    {daysCount && (
+                        <Text style={styles.disclaimer}>
+                            The numbers shown are based on {daysCount} days of data & don't include fixed costs.
+                        </Text>
+                    )}
                 </View>
             </View>
 
@@ -172,32 +167,6 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         marginRight: 15,
-    },
-    coinStack: {
-        position: 'relative',
-        width: 40,
-        height: 30,
-    },
-    coin: {
-        position: 'absolute',
-        width: 30,
-        height: 20,
-        backgroundColor: '#333',
-        borderRadius: 15,
-        borderWidth: 2,
-        borderColor: '#555',
-    },
-    coin1: {
-        top: 0,
-        left: 0,
-    },
-    coin2: {
-        top: 5,
-        left: 5,
-    },
-    coin3: {
-        top: 10,
-        left: 10,
     },
     savingsText: {
         flex: 1,
@@ -315,6 +284,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: '#333',
+    },
+    disclaimer: {
+        fontSize: 12,
+        fontStyle: 'italic',
+        color: '#666',
+        marginTop: 2,
     },
 });
 
