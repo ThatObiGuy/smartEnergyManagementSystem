@@ -26,7 +26,7 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const BACKEND_URL = 'http://192.168.110.44:3000';
+    const BACKEND_URL = 'https://smartenergymanagementsystem.onrender.com';
 
     useEffect(() => {
         const fetchWeather = async () => {

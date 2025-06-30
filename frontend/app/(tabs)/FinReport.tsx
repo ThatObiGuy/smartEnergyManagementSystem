@@ -24,7 +24,7 @@ export default function FinReport() {
     const [annualGrossSavings, setAnnualGrossSavings] = useState(0);
     const [selectedProvider, setSelectedProvider] = useState<ProviderSavings | null>(null);
 
-    const BACKEND_URL = 'http://192.168.110.44:3000'; // local for now, will change when deploying.
+    const BACKEND_URL = 'https://smartenergymanagementsystem.onrender.com';
 
     // Handler for provider selection
     const handleProviderSelect = (provider: ProviderSavings) => {
