@@ -64,6 +64,9 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
     const fromBattery = getValue(timeframeData.consumption_breakdown?.from_battery);
     const fromGrid = getValue(timeframeData.consumption_breakdown?.from_grid);
 
+    // Calculate max value for bar scaling to allow visual comparison
+    const maxValue = Math.max(totalProduction, totalConsumption);
+
 
     return (
         <View style={styles.container}>
@@ -79,23 +82,31 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
                         {totalProduction > 0 ? (
                             <>
                                 <View style={[styles.barSegment, { 
-                                    backgroundColor: colors.success,
-                                    flex: toHome / totalProduction || 0
+                                    backgroundColor: colors.warning,
+                                    flex: (toHome / maxValue) || 0
                                 }]} />
                                 <View style={[styles.barSegment, { 
                                     backgroundColor: colors.info,
-                                    flex: toBattery / totalProduction || 0
+                                    flex: (toBattery / maxValue) || 0
                                 }]} />
                                 <View style={[styles.barSegment, {
                                     backgroundColor: colors.danger,
-                                    flex: toGrid / totalProduction || 0
+                                    flex: (toGrid / maxValue) || 0
+                                }]} />
+                                {/* Empty space to maintain consistent width */}
+                                <View style={[styles.barSegment, { 
+                                    backgroundColor: 'transparent',
+                                    flex: (maxValue - totalProduction) / maxValue || 0
                                 }]} />
                             </>
                         ) : (
                             <View style={[styles.barSegment, { backgroundColor: colors.lightGray, flex: 1 }]} />
                         )}
                     </View>
-                    <Text style={styles.barValue}>{totalProduction} w</Text>
+                    <View style={styles.barValueContainer}>
+                        <View style={{ flex: totalProduction / maxValue }} />
+                        <Text style={styles.barValue}>{totalProduction} w</Text>
+                    </View>
                 </View>
 
                 <View style={styles.legendContainer}>
@@ -120,22 +131,30 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
                             <>
                                 <View style={[styles.barSegment, { 
                                     backgroundColor: colors.success,
-                                    flex: fromSolar / totalConsumption || 0
+                                    flex: (fromSolar / maxValue) || 0
                                 }]} />
                                 <View style={[styles.barSegment, {
                                     backgroundColor: colors.info,
-                                    flex: fromBattery / totalConsumption || 0
+                                    flex: (fromBattery / maxValue) || 0
                                 }]} />
                                 <View style={[styles.barSegment, {
                                     backgroundColor: colors.danger,
-                                    flex: fromGrid / totalConsumption || 0
+                                    flex: (fromGrid / maxValue) || 0
+                                }]} />
+                                {/* Empty space to maintain consistent width */}
+                                <View style={[styles.barSegment, { 
+                                    backgroundColor: 'transparent',
+                                    flex: (maxValue - totalConsumption) / maxValue || 0
                                 }]} />
                             </>
                         ) : (
                             <View style={[styles.barSegment, { backgroundColor: colors.lightGray, flex: 1 }]} />
                         )}
                     </View>
-                    <Text style={styles.barValue}>{totalConsumption} w</Text>
+                    <View style={styles.barValueContainer}>
+                        <View style={{ flex: totalConsumption / maxValue }} />
+                        <Text style={styles.barValue}>{totalConsumption} w</Text>
+                    </View>
                 </View>
             </View>
 
@@ -212,10 +231,14 @@ const styles = StyleSheet.create({
     barSegment: {
         height: '100%',
     },
+    barValueContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginTop: 2,
+    },
     barValue: {
         fontSize: 10,
         color: colors.gray,
-        textAlign: 'right',
     },
     legendContainer: {
         flexDirection: 'row',

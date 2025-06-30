@@ -12,7 +12,7 @@ import { colors } from '@/styles/colours';
 import { commonStyles } from '@/styles/commonStyles';
 
 export default function Index() {
-    const { siteId } = useSiteContext(); // Context lets us know which site has been selected
+    const { siteId, setInstallationDate, setInstallationCost } = useSiteContext(); // Context lets us know which site has been selected
     const [currentLocation, setCurrentLocation] = useState('');
     const [dataType, setDataType] = useState(''); // Are we using historical or live data
     const [currentStatusVector, setCurrentStatusVector] = useState('1,1,-1,1');
@@ -21,7 +21,7 @@ export default function Index() {
     const [energyStats, setEnergyStats] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const BACKEND_URL = 'http://149.157.114.162:3000';
+    const BACKEND_URL = 'http://192.168.110.44:3000';
 
     // Set location based on site ID
     useEffect(() => {
@@ -39,6 +39,14 @@ export default function Index() {
                 setCurrentLocation(siteInfo.location);
                 setEnergyStats(siteInfo.energy_stats);
                 setDataType(siteInfo.dataType); // Store the dataType from response
+
+                // Store installation date and cost in context
+                if (siteInfo.installation_date) {
+                    setInstallationDate(siteInfo.installation_date);
+                }
+                if (siteInfo.installation_cost) {
+                    setInstallationCost(siteInfo.installation_cost);
+                }
             } catch (err) {
                 console.error('Error fetching site information:', err);
                 setCurrentLocation('Error');

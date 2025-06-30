@@ -17,7 +17,7 @@ const GrossEnergySavingsCard = ({ amount = "XXX.XX" }) => {
     const [selectedProvider, setSelectedProvider] = useState<ProviderSavings | null>(null);
     const [expanded, setExpanded] = useState(false);
 
-    const BACKEND_URL = 'http://149.157.114.162:3000';
+    const BACKEND_URL = 'http://192.168.110.44:3000';
 
     useEffect(() => {
         const fetchProviderSavings = async () => {

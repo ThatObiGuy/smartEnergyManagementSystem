@@ -184,58 +184,6 @@ function isNightTime(time, nightStart, nightEnd) {
     return time >= nightStartTime && time < nightEndTime;
 }
 
-// Function to get installation date by site ID
-export async function getInstallDateBySiteID(req, res) {
-    try {
-        const {siteId} = req.params;
-
-        const result = await sql`
-            SELECT installation_date
-            FROM sites
-            WHERE site_id = ${siteId}
-        `;
-
-        // Check if site exists
-        if (result.length === 0) {
-            return res.status(404).json({ message: "Site not found" });
-        }
-
-        const installDate = result[0].installation_date;
-
-        res.status(200).json({installDate: installDate});
-
-    } catch (error) {
-            console.log("Error getting the installation date ", error);
-            res.status(500).json({ message: "Internal server error"});
-    }
-}
-
-// Function to get installation cost by site ID
-export async function getInstallCostBySiteID(req, res) {
-    try {
-        const {siteId} = req.params;
-
-        const result = await sql`
-            SELECT installation_cost
-            FROM sites
-            WHERE site_id = ${siteId}
-        `;
-
-        // Check if site exists
-        if (result.length === 0) {
-            return res.status(404).json({ message: "Site not found" });
-        }
-
-        const installCost = result[0].installation_cost;
-
-        res.status(200).json({installCost: installCost});
-
-    } catch (error) {
-        console.log("Error getting the installation date ", error);
-        res.status(500).json({ message: "Internal server error"});
-    }
-}
-
 // Function to get the average daily amount of energy sold back to the grid by site ID
 export async function getDailySaleToGridBySiteID(req, res) {
     try {

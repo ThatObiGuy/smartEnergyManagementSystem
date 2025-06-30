@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSiteContext } from "@/context/SiteContext";
 import GrossSavings from "../../components/GrossSavings";
@@ -6,15 +6,23 @@ import BatteryAdvice from "../../components/BatteryAdvice";
 import PaybackProgress from "../../components/PaybackProgress";
 
 export default function FinReport() {
-    const { siteId } = useSiteContext();
-    const [dailySaleToGrid, setDailySaleToGrid] = useState({ lwr: 1, median: 4, upr: 59.5 });
-    const [installationDate, setInstallationDate] = useState('2023-01-15');
-    const [installationCost, setInstallationCost] = useState(15750);
-    const [annualGrossSavings, setAnnualGrossSavings] = useState(12000);
+    const { siteId, installationDate, installationCost } = useSiteContext();
+    const [dailySaleToGrid, setDailySaleToGrid] = useState({ lwr: 0, median: 0, upr: 0 });
+    const [localInstallationDate, setLocalInstallationDate] = useState('');
+    const [localInstallationCost, setLocalInstallationCost] = useState(0);
+    const [annualGrossSavings, setAnnualGrossSavings] = useState(0);
 
-    const BACKEND_URL = 'http://149.157.114.162:3000'; // local for now, will change when deploying.
+    const BACKEND_URL = 'http://192.168.110.44:3000'; // local for now, will change when deploying.
 
     useEffect(() => {
+
+        if (installationDate) {
+            setLocalInstallationDate(installationDate);
+        }
+        if (installationCost) {
+            setLocalInstallationCost(installationCost);
+        }
+
         const fetchFinancialData = async () => {
             try {
                 // Fetch daily sale to grid data
@@ -22,20 +30,6 @@ export default function FinReport() {
                 if (dailySaleResponse.ok) {
                     const dailySaleData = await dailySaleResponse.json();
                     setDailySaleToGrid(dailySaleData.dailySaleToGrid);
-                }
-
-                // Fetch installation date
-                const installDateResponse = await fetch(`${BACKEND_URL}/api/finReport/installationDate/${siteId}`);
-                if (installDateResponse.ok) {
-                    const installDateData = await installDateResponse.json();
-                    setInstallationDate(installDateData.installDate);
-                }
-
-                // Fetch installation cost
-                const installCostResponse = await fetch(`${BACKEND_URL}/api/finReport/installationCost/${siteId}`);
-                if (installCostResponse.ok) {
-                    const installCostData = await installCostResponse.json();
-                    setInstallationCost(installCostData.installCost);
                 }
 
             } catch (err) {
@@ -57,8 +51,8 @@ export default function FinReport() {
             />
 
             <PaybackProgress
-                installationDate={installationDate}
-                installationCost={installationCost}
+                installationDate={localInstallationDate}
+                installationCost={localInstallationCost}
                 annualGrossSavings={annualGrossSavings}
             />
 

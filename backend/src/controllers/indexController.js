@@ -94,7 +94,7 @@ async function calculateStats(siteId, timeCondition) {
         const totalsResult = await sql`
             SELECT 
                 SUM(production_power_w) as total_production,
-                SUM(consumption_power_w) + SUM(CASE WHEN battery_power_w > 0 THEN battery_power_w ELSE 0 END) + SUM(feed_in_power_w) as total_consumption
+                SUM(LEAST(production_power_w, consumption_power_w)) + SUM(-discharging_power_w) + SUM(-purchasing_power_w) as total_consumption
             FROM solar_data
             WHERE site_id = ${siteId}
             AND ${timeCondition}
@@ -123,10 +123,7 @@ async function calculateStats(siteId, timeCondition) {
             SELECT
                 SUM(LEAST(production_power_w, consumption_power_w)) AS from_solar,
                 SUM(-discharging_power_w) as from_battery,
-                SUM(CASE
-                        WHEN grid_power_w < 0 THEN -grid_power_w
-                        ELSE 0
-                    END) AS from_grid
+                SUM(-purchasing_power_w) AS from_grid
             FROM solar_data
             WHERE site_id = ${siteId}
             AND ${timeCondition}
@@ -198,6 +195,7 @@ export async function getStatusByID(req, res) {
             const minutes = Math.floor(now.getMinutes() / 5) * 5;
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
 
+            // First try the exact time match
             result = await sql`
                 SELECT soc_percent, solar_status 
                 FROM toy_solar_data 
@@ -206,6 +204,35 @@ export async function getStatusByID(req, res) {
                 AND day = ${day}
                 AND time = ${timeString}
             `;
+
+            // If no data found, try finding the closest time within the last hour
+            if (result.length === 0) {
+                result = await sql`
+                    SELECT soc_percent, solar_status, ABS(EXTRACT(EPOCH FROM time::time - ${timeString}::time)) as time_diff
+                    FROM toy_solar_data
+                    WHERE site_id = ${siteId}
+                    AND month = ${month}
+                    AND day = ${day}
+                    AND ABS(EXTRACT(EPOCH FROM time::time - ${timeString}::time)) <= 3600
+                    ORDER BY time_diff ASC
+                    LIMIT 1
+                `;
+
+                // If still no data, try the same time from the previous day
+                if (result.length === 0) {
+                    const previousDay = day > 1 ? day - 1 : day;
+                    const previousMonth = day > 1 ? month : (month > 1 ? month - 1 : 12);
+
+                    result = await sql`
+                        SELECT soc_percent, solar_status
+                        FROM toy_solar_data
+                        WHERE site_id = ${siteId}
+                        AND month = ${previousMonth}
+                        AND day = ${previousDay}
+                        AND time = ${timeString}
+                    `;
+                }
+            }
         } else {
             return res.status(400).json({ error: 'Invalid dataType' });
         }
