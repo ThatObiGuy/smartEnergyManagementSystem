@@ -114,12 +114,12 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
 
 const styles = StyleSheet.create({
     header: {
-        marginTop: 25,
+        marginTop: 15, // Reduced margin to save space on mobile
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingHorizontal: 15, // Reduced padding to save space on mobile
+        paddingVertical: 10, // Reduced padding to save space on mobile
         backgroundColor: colors.white,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,

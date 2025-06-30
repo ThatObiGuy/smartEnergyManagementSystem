@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         margin: 0,
     },
     gridText: {
-        fontSize: 24,
+        fontSize: 20, // Reduced font size to save space on mobile
         fontWeight: 'bold',
         color: colors.primary,
         textAlign: 'right',

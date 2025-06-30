@@ -260,9 +260,9 @@ const styles = StyleSheet.create({
         color: colors.info,
     },
     diagramContainer: {
-        height: 250,
+        height: 200, // Reduced height to save space on mobile
         width: '100%',
-        marginVertical: 10,
+        marginVertical: 5, // Reduced margin to save space on mobile
         position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',

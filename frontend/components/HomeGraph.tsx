@@ -178,11 +178,11 @@ const HomeGraph: React.FC<HomeGraphProps> = ({ timeframe, energyStats }) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 15,
+        padding: 10, // Reduced padding to save space on mobile
         backgroundColor: colors.white,
         borderRadius: 10,
-        marginTop: 10,
-        marginBottom: 10,
+        marginTop: 5, // Reduced margin to save space on mobile
+        marginBottom: 5, // Reduced margin to save space on mobile
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
