@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Animated, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '@/styles/colours';
 import { commonStyles } from '@/styles/commonStyles';
 
@@ -25,7 +25,28 @@ const FLOW_PRODUCING = 1;
 const FLOW_CONSUMING = -1;
 const FLOW_NONE = 0;
 
-    const SystemDiagram = ({ status = '1,1,-1,1', soc = 75, dataType = 'Live' }: SystemDiagramProps) => {
+// Function to determine the appropriate battery icon based on SOC and battery flow
+const getBatteryIconName = (soc: number, batteryFlow: number = 0): string => {
+    // If battery is charging, show charging icon
+    if (batteryFlow === FLOW_PRODUCING) {
+        return "battery-charging";
+    }
+
+    // Otherwise, show appropriate battery level icon based on SOC
+    if (soc < 10) return "battery-outline";
+    if (soc < 20) return "battery-10";
+    if (soc < 30) return "battery-20";
+    if (soc < 40) return "battery-30";
+    if (soc < 50) return "battery-40";
+    if (soc < 60) return "battery-50";
+    if (soc < 70) return "battery-60";
+    if (soc < 80) return "battery-70";
+    if (soc < 90) return "battery-80";
+    if (soc < 95) return "battery-90";
+    return "battery";
+};
+
+const SystemDiagram = ({ status = '1,1,-1,1', soc = 75, dataType = 'Live' }: SystemDiagramProps) => {
     // Parse the status string into individual flow states
     const [solarFlow, batteryFlow, homeFlow, gridFlow] = status.split(',').map(Number);
 
@@ -202,13 +223,13 @@ const FLOW_NONE = 0;
 
             {/* Solar Panel */}
             <View style={[styles.iconContainer, styles.solarPanel]}>
-                <Ionicons name="grid" size={30} color={solarFlow === FLOW_PRODUCING ? colors.success : colors.textSecondary} />
+                <MaterialIcons name="solar-power" size={30} color={solarFlow === FLOW_PRODUCING ? colors.success : colors.textSecondary} />
             </View>
 
             {/* Battery with SOC indicator */}
             <View style={[styles.iconContainer, styles.battery]}>
-                <Ionicons
-                    name={batteryFlow === FLOW_PRODUCING ? "battery-charging" : "battery-full"}
+                <MaterialCommunityIcons
+                    name={getBatteryIconName(soc, batteryFlow)}
                     size={30}
                     color={batteryFlow !== FLOW_NONE ? colors.info : colors.textSecondary}
                 />
@@ -223,12 +244,12 @@ const FLOW_NONE = 0;
 
             {/* House */}
             <View style={[styles.iconContainer, styles.house]}>
-                <Ionicons name="home" size={30} color={homeFlow === FLOW_CONSUMING ? colors.warning : colors.textSecondary} />
+                <MaterialIcons name="home" size={30} color={homeFlow === FLOW_CONSUMING ? colors.warning : colors.textSecondary} />
             </View>
 
             {/* Grid Connection */}
             <View style={[styles.iconContainer, styles.grid]}>
-                <Ionicons name="flash" size={30} color={gridFlow !== FLOW_NONE ? colors.danger : colors.textSecondary} />
+                <MaterialIcons name="electric-meter" size={30} color={gridFlow !== FLOW_NONE ? colors.danger : colors.textSecondary} />
             </View>
         </View>
     );
