@@ -1,13 +1,34 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
-const ActiveModel = ({ title = "ACTIVE MODEL" }) => {
+const ActiveModel = ({ title = "ACTIVE MODEL : RULE-BASED", siteId = null }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
-            <View style={styles.placeholder}>
-                <Text style={styles.placeholderText}>Chart Placeholder</Text>
-            </View>
+
+            {/* Display image based on siteId */}
+            {siteId === 1 && (
+                <Image 
+                    source={require('../assets/images/RuleBasedSite1.png')} 
+                    style={styles.image} 
+                    resizeMode="contain"
+                />
+            )}
+
+            {siteId === 2 && (
+                <Image 
+                    source={require('../assets/images/RuleBasedSite2.png')} 
+                    style={styles.image} 
+                    resizeMode="contain"
+                />
+            )}
+
+            {/* Show placeholder if siteId is null */}
+            {siteId === null && (
+                <View style={styles.placeholder}>
+                    <Text style={styles.placeholderText}>Please select a site</Text>
+                </View>
+            )}
         </View>
     );
 };
@@ -40,6 +61,11 @@ const styles = StyleSheet.create({
         color: '#999',
         fontSize: 14,
         fontWeight: '500',
+    },
+    image: {
+        width: '100%',
+        height: 200,
+        marginVertical: 10,
     },
 });
 

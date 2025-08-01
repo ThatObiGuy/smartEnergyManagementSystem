@@ -1,19 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 const DataTable = ({
                             data = [
-                                { model: 'A', independent: '58%', co2Saved: '15kg', costSaved: '€30' },
-                                { model: 'B', independent: '80%', co2Saved: '9kg', costSaved: '€20' },
-                                { model: 'C', independent: '60%', co2Saved: '10kg', costSaved: '€25' }
+                                { model: 'Rule-based', independent: '58%', co2Saved: '15kg', costSaved: '€30' },
+                                { model: 'MILP: minimise cost', independent: '80%', co2Saved: '9kg', costSaved: '€20' },
+                                { model: 'MILP: maximise Co2 reduction', independent: '60%', co2Saved: '10kg', costSaved: '€25' }
                             ],
                             headers = {
                                 model: 'Model',
-                                independent: 'Independent',
-                                co2Saved: 'Co2 Saved',
+                                independent: 'Independence',
+                                co2Saved: 'Co2 Reduction',
                                 costSaved: 'Cost Saved'
-                            }
+                            },
+                            onRowSelect = () => {}
                         }) => {
+    const [selectedRowIndex, setSelectedRowIndex] = useState(0); // Default to first row selected
+
+    const handleRowPress = (index) => {
+        setSelectedRowIndex(index);
+        onRowSelect(index);
+    };
     return (
         <View style={styles.tableContainer}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -36,20 +43,48 @@ const DataTable = ({
 
                     {/* Data Rows */}
                     {data.map((row, index) => (
-                        <View key={index} style={[styles.row, styles.dataRow]}>
-                            <Text style={[styles.cell, styles.dataCell, styles.modelCell]}>
+                        <TouchableOpacity 
+                            key={index} 
+                            style={[
+                                styles.row, 
+                                styles.dataRow,
+                                selectedRowIndex === index && styles.selectedRow
+                            ]}
+                            onPress={() => handleRowPress(index)}
+                        >
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.modelCell,
+                                selectedRowIndex === index && styles.selectedText
+                            ]}>
                                 ({index + 1}) {row.model}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText
+                            ]}>
                                 {row.independent}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText
+                            ]}>
                                 {row.co2Saved}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText
+                            ]}>
                                 {row.costSaved}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
             </ScrollView>
@@ -71,6 +106,13 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 2,
         elevation: 2,
+    },
+    selectedRow: {
+        backgroundColor: '#e6f7ff', // Light blue background for selected row
+    },
+    selectedText: {
+        color: '#1890ff', // Blue text for selected row
+        fontWeight: '500',
     },
     table: {
         minWidth: '100%',
