@@ -134,8 +134,8 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
-        paddingBottom: 80, // Adjusted padding to match reduced component sizes
-        minHeight: 550, // Reduced minimum height to match reduced component sizes
+        paddingBottom: 60, // Further reduced padding to prevent overflow
+        // Removed minHeight to allow container to adapt to content
     },
     loadingContainer: {
         flex: 1,

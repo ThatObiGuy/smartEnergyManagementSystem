@@ -239,7 +239,7 @@ const SystemDiagram = ({ status = '1,1,-1,1', soc = 75, dataType = 'Live' }: Sys
 
             {/* Central Hub */}
             <View style={styles.centralHub}>
-                <Ionicons name="school" size={40} color={colors.textSecondary} />
+                <Ionicons name="school" size={40} color={colors.spur} />
             </View>
 
             {/* House */}

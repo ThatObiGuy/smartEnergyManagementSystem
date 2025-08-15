@@ -146,7 +146,7 @@ const GrossEnergySavingsCard = ({ amount = "XXX.XX", daysCount, providers, isLoa
 
 const styles = StyleSheet.create({
     savingsCard: {
-        marginTop: 25,
+        marginTop: 5,
         backgroundColor: '#ffffff',
         borderRadius: 12,
         padding: 20,

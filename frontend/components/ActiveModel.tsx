@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-const ActiveModel = ({ title = "ACTIVE MODEL : RULE-BASED", siteId = null }) => {
+const ActiveModel = ({ siteId = null, selectedRowIndex = 0 }) => {
+    // Set title based on selectedRowIndex
+    const title = selectedRowIndex === 0 ? "ACTIVE MODEL : RULE-BASED" : "ACTIVE MODEL : MILP";
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{title}</Text>
 
-            {/* Display image based on siteId */}
-            {siteId === 1 && (
+            {/* Display image based on siteId and selectedRowIndex */}
+            {siteId === 1 && selectedRowIndex === 0 && (
                 <Image 
                     source={require('../assets/images/RuleBasedSite1.png')} 
                     style={styles.image} 
@@ -15,9 +18,25 @@ const ActiveModel = ({ title = "ACTIVE MODEL : RULE-BASED", siteId = null }) => 
                 />
             )}
 
-            {siteId === 2 && (
+            {siteId === 1 && selectedRowIndex === 1 && (
+                <Image 
+                    source={require('../assets/images/MILPSite1.png')} 
+                    style={styles.image} 
+                    resizeMode="contain"
+                />
+            )}
+
+            {siteId === 2 && selectedRowIndex === 0 && (
                 <Image 
                     source={require('../assets/images/RuleBasedSite2.png')} 
+                    style={styles.image} 
+                    resizeMode="contain"
+                />
+            )}
+
+            {siteId === 2 && selectedRowIndex === 1 && (
+                <Image 
+                    source={require('../assets/images/MILPSite2.png')} 
                     style={styles.image} 
                     resizeMode="contain"
                 />
@@ -35,7 +54,7 @@ const ActiveModel = ({ title = "ACTIVE MODEL : RULE-BASED", siteId = null }) => 
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 25,
+        marginTop: 5,
         backgroundColor: '#ffffff',
         padding: 20,
         margin: 5,

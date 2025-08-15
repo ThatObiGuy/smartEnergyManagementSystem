@@ -19,91 +19,28 @@ const ModelInfo = ({ selectedRowIndex = 0 }) => {
     const modelInfoContent = [
         {
             title: "Rule-based Scheduling",
-            content: `Rule-based scheduling is a straightforward approach to managing solar and battery systems. 
+            content: `Rule-based scheduling, the default for most household invertors, is a straightforward approach to managing solar and battery systems.
 
-Pros:
 • Simple to implement and understand
-• Low computational requirements
-• Predictable behavior
-• Works well with existing systems
-• Can be easily adjusted based on user preferences
-
-Cons:
-• Less efficient than optimization-based approaches
-• Cannot adapt to complex scenarios
-• May miss opportunities for cost savings
-• Limited ability to consider multiple objectives simultaneously
-• Requires manual tuning of rules`
+• Balanced performance between our 3 metrics of interest
+• Kerry site shows it can underutilise larger batteries`
         },
         {
             title: "MILP Scheduling: Minimizing Cost",
-            content: `Mixed Integer Linear Programming (MILP) for cost minimization is an optimization approach that finds the most cost-effective schedule for energy usage.
+            content: `Mixed Integer Linear Programming (MILP) for cost minimization finds the most cost-effective schedule for energy usage.
 
-Objective Function:
-[Space for objective function]
-
-Pros:
-• Maximizes financial savings
-• Considers time-of-use electricity pricing
-• Can incorporate forecasts for better planning
-• Optimizes battery charging/discharging cycles
-• Provides provably optimal solutions
-
-Cons:
-• Computationally intensive
-• Requires accurate forecasting
-• May prioritize cost over environmental impact
-• More complex to implement and maintain
-• Depends on accurate pricing information`
-        },
-        {
-            title: "MILP Scheduling: Maximizing CO2 Reduction",
-            content: `Mixed Integer Linear Programming (MILP) for CO2 reduction prioritizes environmental impact over financial considerations.
-
-Objective Function:
-[Space for objective function]
-
-Pros:
-• Maximizes environmental benefits
-• Reduces carbon footprint
-• Aligns with sustainability goals
-• Can incorporate grid carbon intensity data
-• Optimizes for clean energy usage
-
-Cons:
-• May result in higher electricity costs
-• Requires accurate carbon intensity data
-• Computationally intensive
-• More complex to implement and maintain
-• Benefits may be less tangible to users`
+• Maximizes financial savings (or adjusted for other goals)
+• Considers time-of-use pricing
+• Computationally intensive`
         }
     ];
 
     // Get the current model info based on selected row
     const currentModelInfo = modelInfoContent[selectedRowIndex] || modelInfoContent[0];
 
-    // Function to render content with special formatting for objective function
+    // Function to render content
     const renderContent = () => {
         const content = currentModelInfo.content;
-
-        // For MILP models, we want to format the objective function section
-        if (selectedRowIndex === 1 || selectedRowIndex === 2) {
-            const parts = content.split('[Space for objective function]');
-
-            return (
-                <>
-                    <Text style={styles.informationContent}>{parts[0]}</Text>
-                    <View style={styles.objectiveFunction}>
-                        <Text style={{fontStyle: 'italic', textAlign: 'center'}}>
-                            Space reserved for objective function
-                        </Text>
-                    </View>
-                    <Text style={styles.informationContent}>{parts[1]}</Text>
-                </>
-            );
-        }
-
-        // For rule-based model, just render the content normally
         return <Text style={styles.informationContent}>{content}</Text>;
     };
 
@@ -140,9 +77,9 @@ Cons:
 const styles = StyleSheet.create({
     informationContainer: {
         backgroundColor: '#ffffff',
-        paddingHorizontal: 20,
-        paddingVertical: 20,
-        marginBottom: 20,
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        marginBottom: 10,
     },
     informationTitle: {
         fontSize: 18,
@@ -155,14 +92,6 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         color: '#666',
         textAlign: 'justify',
-    },
-    objectiveFunction: {
-        fontSize: 14,
-        fontStyle: 'italic',
-        backgroundColor: '#f5f5f5',
-        padding: 10,
-        borderRadius: 5,
-        marginVertical: 10,
     },
     centeredView: {
         flex: 1,

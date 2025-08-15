@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import ActiveModel from "../../components/ActiveModel";
 import DataTable from "../../components/DataTable";
@@ -14,10 +14,27 @@ export default function ModelComp() {
     };
 
     return (
-        <View>
-            <ActiveModel siteId={siteId} />
-            <DataTable onRowSelect={handleRowSelect} />
+        <View style={styles.container}>
+            <ActiveModel siteId={siteId} selectedRowIndex={selectedRowIndex} />
+            <Text style={styles.disclaimer}>
+                * Figures based on monthly-mean across a year of data.
+            </Text>
+            <DataTable siteId={siteId} onRowSelect={handleRowSelect} />
             <ModelInfo selectedRowIndex={selectedRowIndex} />
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        paddingBottom: 10, // Add padding to prevent content from touching the bottom edge
+    },
+    disclaimer: {
+        fontSize: 10,
+        fontStyle: 'italic',
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 0,
+        marginBottom: 0,
+    }
+});
