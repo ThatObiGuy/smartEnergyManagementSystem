@@ -1,3 +1,5 @@
 # IntelliJ IDEA files
 .idea/
 .junie/
+app.json
+eas.json

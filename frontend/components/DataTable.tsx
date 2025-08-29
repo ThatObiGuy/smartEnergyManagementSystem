@@ -1,19 +1,43 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 const DataTable = ({
-                            data = [
-                                { model: 'A', independent: '58%', co2Saved: '15kg', costSaved: '€30' },
-                                { model: 'B', independent: '80%', co2Saved: '9kg', costSaved: '€20' },
-                                { model: 'C', independent: '60%', co2Saved: '10kg', costSaved: '€25' }
-                            ],
+                            siteId = 1,
                             headers = {
                                 model: 'Model',
-                                independent: 'Independent',
-                                co2Saved: 'Co2 Saved',
-                                costSaved: 'Cost Saved'
-                            }
+                                independent: 'Independence',
+                                co2Produced: 'Co2 Produced',
+                                cost: 'Cost'
+                            },
+                            onRowSelect = () => {}
                         }) => {
+    // Define data based on siteId
+    const site1Data = [
+        { model: 'Rule-based', independent: '39.66%', co2Produced: '537.05kg', cost: '€94.53' },
+        { model: 'MILP', independent: '33.64%', co2Produced: '568.01kg', cost: '€72.99' }
+    ];
+
+    const site2Data = [
+        { model: 'Rule-based', independent: '19.73%', co2Produced: '191.1kg', cost: '€173.83' },
+        { model: 'MILP', independent: '23.19%', co2Produced: '183.8kg', cost: '€157.44' }
+    ];
+
+    let data;
+    switch (siteId) {
+        case 1:
+            data = site1Data;
+            break;
+        case 2:
+            data = site2Data;
+            break;
+    } // Easier to add more in the future
+
+    const [selectedRowIndex, setSelectedRowIndex] = useState(0); // Default to first row selected
+
+    const handleRowPress = (index) => {
+        setSelectedRowIndex(index);
+        onRowSelect(index);
+    };
     return (
         <View style={styles.tableContainer}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -27,29 +51,62 @@ const DataTable = ({
                             {headers.independent}
                         </Text>
                         <Text style={[styles.cell, styles.headerCell, styles.dataCell]}>
-                            {headers.co2Saved}
+                            {headers.co2Produced}
                         </Text>
                         <Text style={[styles.cell, styles.headerCell, styles.dataCell]}>
-                            {headers.costSaved}
+                            {headers.cost}
                         </Text>
                     </View>
 
                     {/* Data Rows */}
                     {data.map((row, index) => (
-                        <View key={index} style={[styles.row, styles.dataRow]}>
-                            <Text style={[styles.cell, styles.dataCell, styles.modelCell]}>
-                                ({index + 1}) {row.model}
+                        <TouchableOpacity 
+                            key={index} 
+                            style={[
+                                styles.row, 
+                                styles.dataRow,
+                                selectedRowIndex === index && styles.selectedRow
+                            ]}
+                            onPress={() => handleRowPress(index)}
+                        >
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.modelCell,
+                                selectedRowIndex === index && styles.selectedText
+                            ]}>
+                                {row.model}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText,
+                                siteId === 1 && index === 1 && styles.redText, // Red text for MILP independence on site 1
+                                siteId === 2 && index === 1 && styles.greenText // Green text for MILP independence on site 2
+                            ]}>
                                 {row.independent}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
-                                {row.co2Saved}
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText,
+                                siteId === 1 && index === 1 && styles.redText, // Red text for MILP CO2 produced on site 1
+                                siteId === 2 && index === 1 && styles.greenText // Green text for MILP CO2 produced on site 2
+                            ]}>
+                                {row.co2Produced}
                             </Text>
-                            <Text style={[styles.cell, styles.dataCell, styles.dataCell]}>
-                                {row.costSaved}
+                            <Text style={[
+                                styles.cell, 
+                                styles.dataCell, 
+                                styles.dataCell,
+                                selectedRowIndex === index && styles.selectedText,
+                                index === 1 && styles.greenText // Green text for MILP cost on both sites
+                            ]}>
+                                {row.cost}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
             </ScrollView>
@@ -72,6 +129,19 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
         elevation: 2,
     },
+    selectedRow: {
+        backgroundColor: '#e6f7ff', // Light blue background for selected row
+    },
+    selectedText: {
+        color: '#1890ff', // Blue text for selected row
+        fontWeight: '500',
+    },
+    redText: {
+        color: '#c62026',
+    },
+    greenText: {
+        color: '#4CAF50',
+    },
     table: {
         minWidth: '100%',
     },
@@ -87,8 +157,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
     },
     cell: {
-        paddingVertical: 12,
-        paddingHorizontal: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 8,
         textAlign: 'center',
         fontSize: 14,
     },
@@ -104,10 +174,10 @@ const styles = StyleSheet.create({
         borderRightColor: '#e0e0e0',
     },
     modelCell: {
-        flex: 1,
-        minWidth: 80,
+        flex: 1.5,
+        minWidth: 90,
         textAlign: 'left',
-        paddingLeft: 15,
+        paddingLeft: 10,
     },
     dataCell: {
         flex: 1,

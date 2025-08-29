@@ -19,7 +19,7 @@ export default function Landing() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="school" size={80} color={colors.textSecondary} />
+        <Ionicons name="school" size={80} color={colors.spur} />
         <Text style={styles.title}>Energy Management System</Text>
       </View>
 

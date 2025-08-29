@@ -26,7 +26,7 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const BACKEND_URL = 'http://192.168.110.44:3000';
+    const BACKEND_URL = 'https://smartenergymanagementsystem.onrender.com';
 
     useEffect(() => {
         const fetchWeather = async () => {
@@ -114,12 +114,12 @@ const HomeInfo = ({ location }: HomeInfoProps) => {
 
 const styles = StyleSheet.create({
     header: {
-        marginTop: 25,
+        marginTop: 5, // Reduced margin to save space on mobile
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingHorizontal: 15, // Reduced padding to save space on mobile
+        paddingVertical: 10, // Reduced padding to save space on mobile
         backgroundColor: colors.white,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,

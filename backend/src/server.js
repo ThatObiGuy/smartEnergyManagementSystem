@@ -6,12 +6,19 @@ import indexRouter from "./routes/indexRoutes.js";
 import finReportRouter from "./routes/finReportRoutes.js";
 // import modelCompRouter from "./routes/modelCompRoutes.js";
 import weatherRoutes from "./routes/weatherRoutes.js";
+import job from "./config/cron.js";
 
 dotenv.config();
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") job.start();
+
 const PORT = process.env.PORT;
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok'})
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!');

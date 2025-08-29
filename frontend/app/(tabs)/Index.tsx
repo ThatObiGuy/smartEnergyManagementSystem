@@ -21,7 +21,7 @@ export default function Index() {
     const [energyStats, setEnergyStats] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const BACKEND_URL = 'http://192.168.110.44:3000';
+    const BACKEND_URL = 'https://smartenergymanagementsystem.onrender.com';
 
     // Set location based on site ID
     useEffect(() => {
@@ -134,7 +134,8 @@ export default function Index() {
 const styles = StyleSheet.create({
     container: {
         position: 'relative',
-        paddingBottom: 50, // Reduced padding to match smaller return button
+        paddingBottom: 60, // Further reduced padding to prevent overflow
+        // Removed minHeight to allow container to adapt to content
     },
     loadingContainer: {
         flex: 1,
@@ -151,16 +152,25 @@ const styles = StyleSheet.create({
         ...commonStyles.button,
         ...commonStyles.primaryButton,
         flexDirection: 'row',
-        position: 'absolute',
-        bottom: 5,
+        position: 'absolute', // Use absolute position which is supported in React Native
+        bottom: 30, // Further increased bottom margin to move button even higher up
         left: 10,
         right: 10,
         justifyContent: 'center',
-        paddingVertical: 10, // Reduced padding to make button more compact
+        paddingVertical: 12, // Increased padding to make button more tappable
+        zIndex: 1000, // Ensure button is above other elements
+        shadowColor: colors.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5, // Increased elevation for Android
+        borderWidth: 1, // Add border for better visibility
+        borderColor: colors.white, // White border for contrast
     },
     returnButtonText: {
         ...commonStyles.buttonText,
-        marginLeft: 8,
-        fontSize: 16,
+        marginLeft: 6,
+        fontSize: 14, // Kept reduced font size to make text more compact
+        fontWeight: 'bold', // Make text bold for better visibility
     },
 });

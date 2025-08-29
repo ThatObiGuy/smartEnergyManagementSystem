@@ -1,14 +1,15 @@
 export const colors = {
-    // Primary colors
-    primary: '#007AFF',
-    primaryLight: '#4DA6FF',
-    primaryDark: '#0056B3',
+    // BLUE - don't worry about this for now
+    primary: '#2196F3',
+    primaryLight: '#2196F3',
+    primaryDark: '#2196F3',
 
-    // Secondary colors
+    // Primary colors
     success: '#4CAF50',
-    danger: '#F44336',
+    danger: '#c62026',
     warning: '#FFB800',
     info: '#2196F3',
+    spur: '#163e40',
 
     // Neutral colors
     white: '#FFFFFF',
