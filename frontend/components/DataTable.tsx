@@ -22,7 +22,16 @@ const DataTable = ({
         { model: 'MILP', independent: '23.19%', co2Produced: '183.8kg', cost: '€157.44' }
     ];
 
-    const data = siteId === 1 ? site1Data : site2Data;
+    let data;
+    switch (siteId) {
+        case 1:
+            data = site1Data;
+            break;
+        case 2:
+            data = site2Data;
+            break;
+    } // Easier to add more in the future
+
     const [selectedRowIndex, setSelectedRowIndex] = useState(0); // Default to first row selected
 
     const handleRowPress = (index) => {
@@ -128,10 +137,10 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     redText: {
-        color: '#c62026', // Red text for MILP independence and CO2 produced
+        color: '#c62026',
     },
     greenText: {
-        color: '#4CAF50', // Green text for MILP cost
+        color: '#4CAF50',
     },
     table: {
         minWidth: '100%',

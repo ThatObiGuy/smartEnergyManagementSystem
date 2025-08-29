@@ -14,7 +14,7 @@ export default function ModelComp() {
     };
 
     return (
-        <View style={styles.container}>
+        <View>
             <ActiveModel siteId={siteId} selectedRowIndex={selectedRowIndex} />
             <Text style={styles.disclaimer}>
                 * Figures based on monthly-mean across a year of data.
@@ -26,9 +26,6 @@ export default function ModelComp() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        paddingBottom: 10, // Add padding to prevent content from touching the bottom edge
-    },
     disclaimer: {
         fontSize: 10,
         fontStyle: 'italic',
